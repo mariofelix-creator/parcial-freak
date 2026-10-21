@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#7C3AED" />
+<title>Parcial Freak</title>
+<style>
+  :root{
+    --b:#7C3AED;            /* Condición B — método freak */
+    --b-light:#EDE9FE;
+    --b-soft:#F6F2FF;
+    --a:#6B7280;            /* Condición A — método tradicional */
+    --a-light:#E5E7EB;
+    --a-soft:#F3F4F6;
+    --bg:#F6F6FA;
+    --card:#FFFFFF;
+    --text:#111827;
+    --muted:#6B7280;
+    --line:#E5E7EB;
+    --ok:#059669;
+    --warn:#B45309;
+    --danger:#DC2626;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(16,24,40,.06), 0 4px 12px rgba(16,24,40,.05);
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.45;
+    font-size:16px; -webkit-text-size-adjust:100%;
+  }
+  #app{ max-width:480px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
+  main{ flex:1; padding:16px 16px 92px; }
+  .view{ display:none; animation:fade .18s ease; }
+  .view.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+  h1,h2,h3{ margin:0; }
+  .title{ font-size:22px; font-weight:800; letter-spacing:-.3px; }
+  .subtitle{ color:var(--muted); font-size:14px; margin-top:2px; }
+  .muted{ color:var(--muted); }
+
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); margin-bottom:14px; }
+  .card h3{ font-size:15px; font-weight:700; margin-bottom:8px; }
+  .card p{ font-size:14px; margin:6px 0; }
+  .pill{ display:inline-block; font-size:12px; font-weight:700; padding:2px 9px; border-radius:999px; }
+  .pill-a{ background:var(--a-soft); color:var(--a); }
+  .pill-b{ background:var(--b-light); color:var(--b); }
+
+  .hero{ background:linear-gradient(135deg,#7C3AED 0%,#5B21B6 100%); color:#fff; border-radius:var(--radius); padding:20px 18px; box-shadow:var(--shadow); }
+  .hero h1{ font-size:24px; font-weight:800; }
+  .hero .tag{ font-size:13px; opacity:.9; margin-top:4px; }
+
+  .btn{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    border:none; border-radius:14px; padding:15px 16px; font-size:16px; font-weight:700;
+    cursor:pointer; transition:transform .05s, opacity .15s; }
+  .btn:active{ transform:scale(.985); }
+  .btn-primary{ background:var(--b); color:#fff; }
+  .btn-outline{ background:#fff; color:var(--text); border:1.5px solid var(--line); }
+  .btn-ghost{ background:transparent; color:var(--muted); border:1px solid var(--line); }
+  .btn-danger{ background:#FEE2E2; color:var(--danger); border:1px solid #FECACA; }
+  .btn-sm{ padding:9px 12px; font-size:14px; border-radius:11px; }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+  /* Bottom nav */
+  nav.bottom{ position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+    width:100%; max-width:480px; background:rgba(255,255,255,.96); backdrop-filter:blur(8px);
+    border-top:1px solid var(--line); display:flex; padding:6px 4px calc(6px + env(safe-area-inset-bottom)); z-index:20; }
+  nav.bottom button{ flex:1; background:none; border:none; cursor:pointer; color:var(--muted);
+    display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; padding:6px 2px; font-weight:600; }
+  nav.bottom button .ico{ font-size:21px; line-height:1; }
+  nav.bottom button.active{ color:var(--b); }
+
+  /* Form */
+  .seg{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .seg button{ border:2px solid var(--line); background:#fff; border-radius:14px; padding:13px 10px; cursor:pointer; text-align:left; }
+  .seg button .t{ font-weight:800; font-size:15px; }
+  .seg button .d{ font-size:12px; color:var(--muted); margin-top:2px; }
+  .seg button.sel-a{ border-color:var(--a); background:var(--a-soft); }
+  .seg button.sel-b{ border-color:var(--b); background:var(--b-soft); }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{ border:1.5px solid var(--line); background:#fff; border-radius:999px; padding:9px 14px;
+    font-size:14px; font-weight:600; cursor:pointer; color:var(--text); }
+  .chip.active{ background:var(--b); border-color:var(--b); color:#fff; }
+
+  .stepper{ display:flex; align-items:center; gap:10px; }
+  .stepper button{ width:48px; height:48px; border-radius:12px; border:1.5px solid var(--line);
+    background:#fff; font-size:24px; font-weight:700; cursor:pointer; color:var(--text); }
+  .stepper .val{ flex:1; text-align:center; font-size:28px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .stepper .lbl{ font-size:12px; color:var(--muted); text-align:center; margin-top:-2px; }
+  .field{ margin-bottom:18px; }
+  .field > label{ display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:.3px; }
+
+  /* Stars */
+  .stars{ display:flex; gap:8px; justify-content:center; }
+  .stars button{ background:none; border:none; font-size:40px; cursor:pointer; line-height:1; color:var(--line); padding:0 2px; }
+  .stars button.on{ color:#F59E0B; }
+
+  textarea{ width:100%; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-size:15px;
+    font-family:inherit; resize:vertical; min-height:74px; }
+  textarea:focus{ outline:none; border-color:var(--b); }
+
+  /* Stat / compare */
+  .cmp{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .cmp .box{ border-radius:14px; padding:14px; border:1.5px solid var(--line); }
+  .cmp .box.a{ background:var(--a-soft); border-color:var(--a-light); }
+  .cmp .box.b{ background:var(--b-soft); border-color:var(--b-light); }
+  .cmp .k{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; }
+  .cmp .a .k{ color:var(--a); } .cmp .b .k{ color:var(--b); }
+  .cmp .v{ font-size:26px; font-weight:800; margin-top:2px; font-variant-numeric:tabular-nums; }
+  .cmp .u{ font-size:12px; color:var(--muted); }
+
+  .delta{ font-size:13px; font-weight:700; margin-top:6px; }
+  .delta.pos{ color:var(--ok); } .delta.neg{ color:var(--danger); } .delta.zero{ color:var(--muted); }
+
+  .banner{ border-radius:12px; padding:12px 14px; font-size:13.5px; font-weight:600; margin-bottom:14px; }
+  .banner.warn{ background:#FEF3C7; color:var(--warn); border:1px solid #FDE68A; }
+  .banner.ok{ background:#D1FAE5; color:#065F46; border:1px solid #A7F3D0; }
+
+  .segbar{ display:flex; gap:6px; margin-bottom:10px; }
+  .segbar button{ flex:1; border:1.5px solid var(--line); background:#fff; border-radius:10px;
+    padding:9px 6px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--muted); }
+  .segbar button.active{ background:var(--b); border-color:var(--b); color:#fff; }
+
+  canvas{ width:100%; height:auto; display:block; }
+
+  ul.msg{ list-style:none; margin:0; padding:0; }
+  ul.msg li{ font-size:14px; padding:10px 12px; background:var(--b-soft); border:1px solid var(--b-light);
+    border-radius:12px; margin-bottom:8px; }
+
+  .row{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 0; border-bottom:1px solid var(--line); }
+  .row:last-child{ border-bottom:none; }
+  .row .meta{ font-size:12.5px; color:var(--muted); }
+  .row .anulado{ text-decoration:line-through; opacity:.55; }
+  .tag-anulado{ color:var(--danger); font-size:11px; font-weight:800; }
+
+  .disclaimer{ font-size:12px; color:var(--muted); border-left:3px solid var(--line); padding-left:10px; margin-top:12px; }
+
+  #toast{ position:fixed; bottom:88px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:#111827; color:#fff; padding:11px 18px; border-radius:999px; font-size:14px; font-weight:600;
+    opacity:0; pointer-events:none; transition:all .25s; z-index:40; max-width:88%; text-align:center; }
+  #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div id="app">
+  <main>
+
+    <!-- ============ INICIO ============ -->
+    <section id="view-inicio" class="view active">
+      <div class="hero">
+        <h1>Parcial Freak 🎯</h1>
+        <div class="tag">Compara tu método de estudio · UAGRM · Santa Cruz, Bolivia</div>
+      </div>
+
+      <div class="card">
+        <h3>El problema</h3>
+        <p><span class="pill pill-a">Pregunta clásica</span><br>
+        «¿Cómo me obligo a estudiar <b>más horas</b> para retener mejor el material antes del examen?»</p>
+        <p><span class="pill pill-b">Pregunta freak</span><br>
+        «¿Cómo rindo mejor invirtiendo <b>menos horas</b>, convirtiendo a la IA en un sistema entrenado con <b>mis propios errores</b> en vez de usarla como tutor genérico?»</p>
+      </div>
+
+      <div class="card">
+        <h3>Hipótesis</h3>
+        <p>Si cambio <b>el método de estudio</b> —de relectura y subrayado pasivo a <b>práctica activa con IA entrenada en mis errores</b>—, entonces mi <b>rendimiento en el parcial</b> mejora, medido con el <b>% de acierto</b> en preguntas del tema.</p>
+        <p class="muted" style="font-size:13px;">Causa raíz probable: estudio el problema equivocado (método pasivo), no estudio poco.</p>
+      </div>
+
+      <div class="card">
+        <h3>Tu experimento hasta ahora</h3>
+        <div class="cmp" id="inicio-stats"></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="empezarRegistro()">➕ Registrar sesión de estudio</button>
+    </section>
+
+    <!-- ============ REGISTRAR ============ -->
+    <section id="view-registrar" class="view">
+      <h2 class="title">Registrar</h2>
+      <p class="subtitle">Paso 1 de 2 · marca cómo estudiaste hoy</p>
+
+      <div class="card field">
+        <label>Condición</label>
+        <div class="seg" id="seg-cond">
+          <button data-c="A" class="sel-a">
+            <div class="t">A · Tradicional</div>
+            <div class="d">Releer y subrayar apuntes</div>
+          </button>
+          <button data-c="B">
+            <div class="t">B · Freak</div>
+            <div class="d">Practicar con IA entrenada en tus errores</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="card field">
+        <label>Tema trabajado</label>
+        <div class="chips" id="chips-cat"></div>
+      </div>
+
+      <div class="card field">
+        <label>Aciertos (preguntas correctas)</label>
+        <div class="stepper">
+          <button onclick="step('aciertos',-1)">−</button>
+          <div><div class="val" id="v-aciertos">0</div><div class="lbl">aciertos</div></div>
+          <button onclick="step('aciertos',+1)">＋</button>
+        </div>
+      </div>
+
+      <div class="card field">
+        <label>Total de preguntas</label>
+        <div class="stepper">
+          <button onclick="step('total',-1)">−</button>
+          <div><div class="val" id="v-total">0</div><div class="lbl">preguntas</div></div>
+          <button onclick="step('total',+1)">＋</button>
+        </div>
+        <p class="muted" style="font-size:13px; text-align:center; margin-top:6px;" id="pct-preview">— %</p>
+      </div>
+
+      <div class="card field">
+        <label>Minutos de estudio (opcional)</label>
+        <div class="stepper">
+          <button onclick="step('minutos',-5)">−</button>
+          <div><div class="val" id="v-minutos">0</div><div class="lbl">minutos</div></div>
+          <button onclick="step('minutos',+5)">＋</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="irACierre()">Continuar →</button>
+    </section>
+
+    <!-- ============ CIERRE ============ -->
+    <section id="view-cierre" class="view">
+      <h2 class="title">Cierre</h2>
+      <p class="subtitle">Paso 2 de 2 · califica y guarda el registro</p>
+
+      <div class="card" id="cierre-resumen"></div>
+
+      <div class="card field">
+        <label>¿Qué tan concentrado estuviste?</label>
+        <div class="stars" id="stars"></div>
+        <p class="muted" style="font-size:13px; text-align:center; margin-top:6px;" id="stars-lbl">Toca una estrella</p>
+      </div>
+
+      <div class="card field">
+        <label>Nota (opcional)</label>
+        <textarea id="nota" placeholder="Ej.: me confundí entre mediana y media…"></textarea>
+      </div>
+
+      <button class="btn btn-primary" onclick="guardarRegistro()">✔ Guardar registro</button>
+      <button class="btn btn-ghost" style="margin-top:10px;" onclick="volverARegistrar()">← Volver</button>
+    </section>
+
+    <!-- ============ RESULTADOS ============ -->
+    <section id="view-resultados" class="view">
+      <h2 class="title">Resultados</h2>
+      <p class="subtitle">A (gris) vs B (violeta) · tus propios datos</p>
+
+      <div id="resultado-banner"></div>
+
+      <div class="card">
+        <h3>Comparación por indicador</h3>
+        <div class="segbar" id="segbar-ind"></div>
+        <div class="cmp" id="cmp-ind"></div>
+        <div id="cmp-delta"></div>
+        <canvas id="chart-bars" height="220"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Línea de tiempo por día</h3>
+        <canvas id="chart-time" height="230"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Qué dicen tus datos</h3>
+        <ul class="msg" id="mensajes"></ul>
+        <div class="disclaimer">⚠️ Esto es una <b>comparación descriptiva</b>. No prueba que una condición <b>cause</b> la otra: pueden influir el tema, el cansancio, el día u otros factores.</div>
+      </div>
+
+      <div class="card">
+        <h3>Registros</h3>
+        <div id="lista-registros"></div>
+      </div>
+    </section>
+
+    <!-- ============ EXPORTAR ============ -->
+    <section id="view-exportar" class="view">
+      <h2 class="title">Exportar</h2>
+      <p class="subtitle">Lleva tus datos como anexo de evidencias</p>
+
+      <div class="card">
+        <h3>🔒 Privacidad</h3>
+        <p>Los datos quedan <b>guardados en este dispositivo</b> (navegador). No se envían a ningún servidor y no se pide nombre real, correo ni edad.</p>
+      </div>
+
+      <div class="card">
+        <h3>Descargar</h3>
+        <button class="btn btn-outline" onclick="exportarCSV()" style="margin-bottom:10px;">⬇ Descargar datos (CSV)</button>
+        <button class="btn btn-outline" onclick="exportarResumen()">⬇ Descargar resumen (texto con fechas)</button>
+      </div>
+
+      <div class="card">
+        <h3>Datos de ejemplo</h3>
+        <p class="muted" style="font-size:13px;">Incluye <span id="n-ejemplo">0</span> registro(s) de ejemplo marcados como «Datos de ejemplo».</p>
+        <button class="btn btn-danger btn-sm" onclick="borrarEjemplos()" style="margin-bottom:10px;">🗑 Borrar datos de ejemplo</button>
+        <button class="btn btn-ghost btn-sm" onclick="borrarTodo()">Borrar todo (reiniciar)</button>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="bottom">
+    <button data-v="inicio" class="active"><span class="ico">🏠</span>Inicio</button>
+    <button data-v="registrar"><span class="ico">✏️</span>Registrar</button>
+    <button data-v="resultados"><span class="ico">📊</span>Resultados</button>
+    <button data-v="exportar"><span class="ico">⬇️</span>Exportar</button>
+  </nav>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   PARCIAL FREAK — app móvil en español (UAGRM · Santa Cruz)
+   Datos en localStorage. Sin dependencias externas.
+   ============================================================ */
+'use strict';
+
+const STORAGE_KEY = 'parcial_freak_registros_v1';
+const COLOR_A = '#6B7280', COLOR_A_LIGHT = '#9CA3AF';
+const COLOR_B = '#7C3AED', COLOR_B_LIGHT = '#A78BFA';
+const COLOR_A_FILL = '#E5E7EB';
+const COLOR_B_FILL = '#EDE9FE';
+
+const CATEGORIAS = ['Media','Mediana','Moda','Datos agrupados','Mixto','Otro'];
+const NOMBRES = { A:'Método tradicional', B:'Método freak (IA con tus errores)' };
+
+const INDICADORES = [
+  { key:'acierto',      label:'% acierto',     unit:'%',  max:100, decimals:0 },
+  { key:'concentracion',label:'Concentración', unit:'/5',  max:5,   decimals:1 },
+  { key:'minutos',      label:'Minutos/sesión',unit:'min', max:null, decimals:0 }
+];
+
+let draft = null;          // registro en curso
+let indSel = 'acierto';    // indicador seleccionado en Resultados
+
+/* Polyfill de roundRect (Safari < 16) */
+if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r){
+    r = Math.min(r, w/2, h/2);
+    this.moveTo(x+r, y);
+    this.arcTo(x+w, y, x+w, y+h, r);
+    this.arcTo(x+w, y+h, x, y+h, r);
+    this.arcTo(x, y+h, x, y, r);
+    this.arcTo(x, y, x+w, y, r);
+    this.closePath();
+    return this;
+  };
+}
+
+/* ---------- utilidades ---------- */
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function hoyISO(){ return new Date().toISOString(); }
+function fmtFecha(iso){ const d=new Date(iso); return d.toLocaleDateString('es-BO',{day:'2-digit',month:'short'}); }
+function fmtFechaHora(iso){ const d=new Date(iso); return d.toLocaleDateString('es-BO',{day:'2-digit',month:'short'})+' · '+d.toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit'}); }
+function pct(r){ return r.total>0 ? Math.round(r.aciertos/r.total*100) : 0; }
+function avg(nums){ const n=nums.filter(v=>v!==null && v!==undefined); if(!n.length) return null; return n.reduce((a,b)=>a+b,0)/n.length; }
+function round(v,d){ if(v===null) return null; const m=Math.pow(10,d||0); return Math.round(v*m)/m; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---------- almacenamiento ---------- */
+function load(){ try{ const r=localStorage.getItem(STORAGE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } }
+function save(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+function registros(){ let d=load(); if(d===null){ d=seedEjemplos(); save(d); } return d; }
+function activos(){ return registros().filter(r=>!r.anulado); }
+
+function seedEjemplos(){
+  const A='A', B='B';
+  function R(cond,cat,ac,tot,min,conc,nota,dia){
+    return { id:uid(), condicion:cond, categoria:cat, aciertos:ac, total:tot,
+             minutos:min, concentracion:conc, nota:nota||'', fecha:dia+'T20:30:00',
+             anulado:false, ejemplo:true };
+  }
+  return [
+    // Condición A — método tradicional (gris) · 7 sesiones
+    R(A,'Media',8,20,50,2,'Releí y subrayé; se me olvidaba al responder.','2026-04-28'),
+    R(A,'Media',10,20,55,2,'','2026-04-29'),
+    R(A,'Mediana',9,20,50,3,'','2026-04-30'),
+    R(A,'Mediana',11,20,60,3,'','2026-05-01'),
+    R(A,'Moda',10,20,45,2,'','2026-05-02'),
+    R(A,'Datos agrupados',8,20,55,2,'','2026-05-03'),
+    R(A,'Mixto',12,25,60,3,'','2026-05-04'),
+    // Condición B — método freak (violeta) · 9 sesiones (datos del informe)
+    R(B,'Media',9,20,45,3,'Día 1: subí recursos del examen a la IA.','2026-05-05'),
+    R(B,'Media',11,20,40,4,'El error del lunes casi desaparece.','2026-05-06'),
+    R(B,'Datos agrupados',13,20,40,4,'','2026-05-07'),
+    R(B,'Mixto',15,20,45,4,'','2026-05-08'),
+    R(B,'Mixto',17,20,60,4,'Simulacro general de semana 1.','2026-05-09'),
+    R(B,'Mixto',22,25,40,5,'Quiz mixto pesando errores históricos.','2026-05-12'),
+    R(B,'Mixto',36,40,90,5,'Simulacro cronometrado, formato idéntico al parcial.','2026-05-13'),
+    R(B,'Mixto',14,15,35,5,'Solo errores residuales.','2026-05-14'),
+    R(B,'Mixto',95,100,60,5,'Parcial real de Estadística: 95/100.','2026-05-15')
+  ];
+}
+
+/* ---------- navegación ---------- */
+function show(v){
+  document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('nav.bottom button').forEach(b=>b.classList.toggle('active', b.dataset.v===v));
+  window.scrollTo({top:0});
+  if(v==='resultados') renderResultados();
+  if(v==='inicio') renderInicio();
+  if(v==='exportar') renderExportar();
+}
+document.querySelectorAll('nav.bottom button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.v)));
+
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200); }
+
+/* ---------- INICIO ---------- */
+function renderInicio(){
+  const recs=activos();
+  const a=recs.filter(r=>r.condicion==='A').length;
+  const b=recs.filter(r=>r.condicion==='B').length;
+  const ultimos=recs.slice().sort((x,y)=>y.fecha.localeCompare(x.fecha));
+  const ult=ultimos[0];
+  document.getElementById('inicio-stats').innerHTML =
+    '<div class="box a"><div class="k">Condición A</div><div class="v">'+a+'</div><div class="u">sesiones</div></div>'+
+    '<div class="box b"><div class="k">Condición B</div><div class="v">'+b+'</div><div class="u">sesiones</div></div>'+
+    '<div class="box" style="grid-column:1/-1;background:#fff;"><div class="k">Último registro</div>'+
+    '<div class="v" style="font-size:20px;">'+(ult? pct(ult)+'% de acierto':'—')+'</div>'+
+    '<div class="u">'+(ult? fmtFechaHora(ult.fecha)+' · '+NOMBRES[ult.condicion]:'Aún no registras nada')+'</div></div>';
+}
+function empezarRegistro(){ draft={condicion:'B', categoria:'Media', aciertos:0, total:0, minutos:0, concentracion:0, nota:''}; renderRegistrar(); show('registrar'); }
+
+/* ---------- REGISTRAR ---------- */
+function renderRegistrar(){
+  const d=draft||{condicion:'B',categoria:'Media'};
+  // condición
+  document.querySelectorAll('#seg-cond button').forEach(b=>{
+    b.classList.toggle('sel-a', b.dataset.c==='A' && d.condicion==='A');
+    b.classList.toggle('sel-b', b.dataset.c==='B' && d.condicion==='B');
+  });
+  // categorías
+  const cc=document.getElementById('chips-cat');
+  cc.innerHTML=CATEGORIAS.map(c=>'<button class="chip'+(d.categoria===c?' active':'')+'" data-cat="'+esc(c)+'">'+esc(c)+'</button>').join('');
+  cc.querySelectorAll('.chip').forEach(ch=>ch.addEventListener('click',()=>{ draft.categoria=ch.dataset.cat; renderRegistrar(); }));
+  // valores
+  document.getElementById('v-aciertos').textContent=d.aciertos;
+  document.getElementById('v-total').textContent=d.total;
+  document.getElementById('v-minutos').textContent=d.minutos;
+  document.getElementById('pct-preview').textContent = d.total>0 ? (Math.round(d.aciertos/d.total*100)+' %') : '— %';
+}
+document.getElementById('seg-cond').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  draft.condicion=b.dataset.c; renderRegistrar();
+});
+function step(campo,delta){
+  const d=draft;
+  if(campo==='aciertos'){ d.aciertos=Math.max(0, d.aciertos+delta); if(d.aciertos>d.total) d.total=d.aciertos; }
+  if(campo==='total'){ d.total=Math.max(0, d.total+delta); if(d.aciertos>d.total) d.aciertos=d.total; }
+  if(campo==='minutos'){ d.minutos=Math.max(0, d.minutos+delta); }
+  renderRegistrar();
+}
+function irACierre(){
+  if(!draft.total){ toast('Indica el total de preguntas'); return; }
+  renderCierre(); show('cierre');
+}
+function volverARegistrar(){ renderRegistrar(); show('registrar'); }
+
+/* ---------- CIERRE ---------- */
+function renderCierre(){
+  const d=draft;
+  document.getElementById('cierre-resumen').innerHTML =
+    '<div class="cmp">'+
+      '<div class="box '+(d.condicion==='A'?'a':'b')+'"><div class="k">Condición '+d.condicion+'</div><div class="v" style="font-size:16px;">'+esc(NOMBRES[d.condicion])+'</div></div>'+
+      '<div class="box" style="background:#fff;"><div class="k">Aciertos</div><div class="v" style="font-size:16px;">'+d.aciertos+' / '+d.total+'</div></div>'+
+      '<div class="box" style="background:#fff;"><div class="k">% acierto</div><div class="v" style="font-size:16px;">'+(d.total>0?Math.round(d.aciertos/d.total*100)+'%':'—')+'</div></div>'+
+      '<div class="box" style="background:#fff;"><div class="k">Tema</div><div class="v" style="font-size:16px;">'+esc(d.categoria)+'</div></div>'+
+    '</div>';
+  const st=document.getElementById('stars');
+  st.innerHTML=[1,2,3,4,5].map(n=>'<button data-n="'+n+'" class="'+(n<=d.concentracion?'on':'')+'">★</button>').join('');
+  st.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ draft.concentracion=parseInt(b.dataset.n,10); renderCierre(); }));
+  document.getElementById('stars-lbl').textContent = d.concentracion>0 ? d.concentracion+' de 5' : 'Toca una estrella';
+  const nota=document.getElementById('nota');
+  nota.value=d.nota;
+  nota.addEventListener('input',()=>{ draft.nota=nota.value; });
+}
+function guardarRegistro(){
+  if(!draft.concentracion){ toast('Toca una estrella (concentración)'); return; }
+  const rec=Object.assign({}, draft, { id:uid(), fecha:hoyISO(), anulado:false, ejemplo:false });
+  const arr=registros(); arr.push(rec); save(arr);
+  draft=null;
+  toast('Registro guardado ✔');
+  show('inicio');
+}
+
+/* ---------- RESULTADOS ---------- */
+function statsIndicador(recs, key){
+  if(key==='acierto') return avg(recs.map(pct));
+  if(key==='concentracion') return avg(recs.map(r=>r.concentracion||null));
+  if(key==='minutos') return avg(recs.map(r=>r.minutos>0?r.minutos:null));
+  return null;
+}
+function renderResultados(){
+  const recs=activos();
+  const A=recs.filter(r=>r.condicion==='A');
+  const B=recs.filter(r=>r.condicion==='B');
+
+  // banner de cantidad mínima
+  const banner=document.getElementById('resultado-banner');
+  if(A.length<5 || B.length<5){
+    banner.innerHTML='<div class="banner warn">⚠️ Para una comparación confiable necesitas al menos <b>5 registros de cada condición</b>. Ahora tienes A='+A.length+' y B='+B.length+'.</div>';
+  } else {
+    banner.innerHTML='<div class="banner ok">✔ Tienes '+A.length+' registros de A y '+B.length+' de B. Muestra suficiente para comparar.</div>';
+  }
+
+  // selector de indicador
+  const sb=document.getElementById('segbar-ind');
+  sb.innerHTML=INDICADORES.map(i=>'<button data-k="'+i.key+'" class="'+(indSel===i.key?'active':'')+'">'+esc(i.label)+'</button>').join('');
+  sb.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ indSel=b.dataset.k; renderResultados(); }));
+
+  const ind=INDICADORES.find(i=>i.key===indSel);
+  const va=statsIndicador(A, indSel);
+  const vb=statsIndicador(B, indSel);
+
+  const fmtVal=v=> v===null ? '—' : round(v, ind.decimals) + (ind.unit==='%'?'%':' '+ind.unit);
+  document.getElementById('cmp-ind').innerHTML =
+    '<div class="box a"><div class="k">A · Tradicional</div><div class="v">'+fmtVal(va)+'</div><div class="u">'+A.length+' sesiones</div></div>'+
+    '<div class="box b"><div class="k">B · Freak</div><div class="v">'+fmtVal(vb)+'</div><div class="u">'+B.length+' sesiones</div></div>';
+
+  const deltaEl=document.getElementById('cmp-delta');
+  if(va!==null && vb!==null){
+    const dif=round(vb-va, ind.decimals);
+    const mejor = ind.key==='minutos' ? (dif<0) : (dif>0);
+    const cls = Math.abs(dif)<0.05 ? 'zero' : (mejor?'pos':'neg');
+    const dir = ind.key==='minutos' ? (dif<0?'menos':'más') : (dif>0?'más':'menos');
+    const sign = dif>0?'+':(dif<0?'−':'');
+    deltaEl.innerHTML='<div class="delta '+cls+'">Diferencia B vs A: <b>'+sign+Math.abs(dif)+' '+ind.unit+'</b> ('+dir+' en B).</div>';
+  } else {
+    deltaEl.innerHTML='<div class="delta zero">Registra al menos una sesión de cada condición para ver la diferencia.</div>';
+  }
+
+  drawBars(); drawTimeline();
+
+  // mensajes
+  const msg=document.getElementById('mensajes');
+  const li=[];
+  if(A.length>=5 && B.length>=5){
+    const pa=statsIndicador(A,'acierto'), pb=statsIndicador(B,'acierto');
+    if(pa!==null && pb!==null) li.push('En <b>B</b> acertaste en promedio <b>'+Math.round(pb)+'%</b> frente a <b>'+Math.round(pa)+'%</b> en A (diferencia de '+Math.round(pb-pa)+' puntos).');
+    const ca=statsIndicador(A,'concentracion'), cb=statsIndicador(B,'concentracion');
+    if(ca!==null && cb!==null) li.push('Tu concentración promedio fue de <b>'+round(cb,1)+'/5</b> en B y <b>'+round(ca,1)+'/5</b> en A.');
+    const ma=statsIndicador(A,'minutos'), mb=statsIndicador(B,'minutos');
+    if(ma!==null && mb!==null) li.push('En B invertiste en promedio <b>'+Math.round(mb)+' min</b> por sesión frente a <b>'+Math.round(ma)+' min</b> en A.');
+  } else {
+    li.push('Todavía no hay suficientes datos para comparar. Sigue registrando hasta tener al menos 5 sesiones de cada condición.');
+  }
+  li.push('Recuerda: esto <b>no prueba causalidad</b>; solo describe lo que mediste.');
+  msg.innerHTML=li.map(t=>'<li>'+t+'</li>').join('');
+
+  // lista de registros
+  const lista=document.getElementById('lista-registros');
+  if(!recs.length){ lista.innerHTML='<p class="muted">Sin registros.</p>'; }
+  else{
+    const orden=[...recs].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+    lista.innerHTML=orden.map(r=>
+      '<div class="row">'+
+        '<div class="'+(r.anulado?'anulado':'')+'">'+
+          '<div style="font-weight:700;">'+pct(r)+'% · '+esc(r.categoria)+' <span class="pill '+(r.condicion==='A'?'pill-a':'pill-b')+'">'+r.condicion+'</span></div>'+
+          '<div class="meta">'+fmtFechaHora(r.fecha)+(r.anulado?' · <span class="tag-anulado">ANULADO</span>':'')+'</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:6px;flex-shrink:0;">'+
+          '<button class="btn btn-ghost btn-sm" onclick="toggleAnulado(\''+r.id+'\')">'+(r.anulado?'Restaurar':'Anular')+'</button>'+
+          '<button class="btn btn-ghost btn-sm" onclick="eliminarRegistro(\''+r.id+'\')">✕</button>'+
+        '</div>'+
+      '</div>').join('');
+  }
+}
+function toggleAnulado(id){
+  const arr=registros(); const r=arr.find(x=>x.id===id);
+  if(r){ r.anulado=!r.anulado; save(arr); renderResultados(); }
+}
+function eliminarRegistro(id){
+  if(!confirm('¿Eliminar este registro?')) return;
+  const arr=registros().filter(x=>x.id!==id); save(arr); renderResultados();
+}
+
+/* ---------- gráficos (Canvas) ---------- */
+function setupCanvas(canvas, h){
+  const dpr=window.devicePixelRatio||1;
+  const w=canvas.clientWidth||canvas.parentElement.clientWidth||320;
+  canvas.width=w*dpr; canvas.height=h*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+  return {ctx,w,h};
+}
+function drawBars(){
+  const canvas=document.getElementById('chart-bars');
+  const {ctx,w,h}=setupCanvas(canvas,220);
+  const ind=INDICADORES.find(i=>i.key===indSel);
+  const recs=activos();
+  const va=statsIndicador(recs.filter(r=>r.condicion==='A'),indSel);
+  const vb=statsIndicador(recs.filter(r=>r.condicion==='B'),indSel);
+  const max= ind.max || Math.max(va||0, vb||0, 1)*1.15;
+  const padL=34, padR=10, padT=18, padB=30;
+  const plotW=w-padL-padR, plotH=h-padT-padB;
+  // eje y
+  ctx.strokeStyle='#E5E7EB'; ctx.fillStyle='#6B7280'; ctx.font='11px system-ui'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  const ticks=4;
+  for(let i=0;i<=ticks;i++){
+    const y=padT+plotH-(plotH*i/ticks);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
+    const v=round(max*i/ticks, ind.decimals);
+    ctx.fillText(v+(ind.unit==='%'?'%':''), padL-6, y);
+  }
+  function bar(cx, val, fill, stroke){
+    if(val===null) return;
+    const bh=(val/max)*plotH;
+    const bw=Math.min(70, plotW*0.28);
+    const x=cx-bw/2, y=padT+plotH-bh;
+    ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.roundRect(x,y,bw,bh,8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#111827'; ctx.font='bold 14px system-ui'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(round(val,ind.decimals)+(ind.unit==='%'?'%':''), cx, y-4);
+  }
+  const cxa=padL+plotW*0.3, cxb=padL+plotW*0.7;
+  bar(cxa, va, COLOR_A_FILL, COLOR_A);
+  bar(cxb, vb, COLOR_B_FILL, COLOR_B);
+  ctx.textAlign='center'; ctx.textBaseline='top'; ctx.font='bold 12px system-ui';
+  ctx.fillStyle=COLOR_A; ctx.fillText('A · Tradicional', cxa, padT+plotH+8);
+  ctx.fillStyle=COLOR_B; ctx.fillText('B · Freak', cxb, padT+plotH+8);
+}
+function drawTimeline(){
+  const canvas=document.getElementById('chart-time');
+  const {ctx,w,h}=setupCanvas(canvas,230);
+  const ind=INDICADORES.find(i=>i.key===indSel);
+  const recs=activos();
+  if(!recs.length){ ctx.fillStyle='#6B7280'; ctx.font='13px system-ui'; ctx.textAlign='center'; ctx.fillText('Sin datos todavía', w/2, h/2); return; }
+  // agrupar por día
+  const dias={};
+  recs.forEach(r=>{ const k=r.fecha.slice(0,10); (dias[k]=dias[k]||{A:[],B:[]})[r.condicion].push(r); });
+  const claves=Object.keys(dias).sort();
+  const padL=34, padR=12, padT=16, padB=30;
+  const plotW=w-padL-padR, plotH=h-padT-padB;
+  const max= ind.max || 100;
+  ctx.strokeStyle='#E5E7EB'; ctx.fillStyle='#6B7280'; ctx.font='11px system-ui'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  const ticks=4;
+  for(let i=0;i<=ticks;i++){
+    const y=padT+plotH-(plotH*i/ticks);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
+    ctx.fillText(round(max*i/ticks, ind.decimals)+(ind.unit==='%'?'%':''), padL-6, y);
+  }
+  const n=claves.length;
+  const x=i=> padL + (n===1? plotW/2 : plotW*i/(n-1));
+  const y=v=> padT + plotH - (Math.min(v,max)/max)*plotH;
+  function serie(cond, color){
+    const pts=[];
+    claves.forEach((k,i)=>{ const vals=dias[k][cond]; if(vals.length){ const s=statsIndicador(vals,indSel); if(s!==null) pts.push([x(i), y(s), s]); } });
+    if(pts.length>1){
+      ctx.strokeStyle=color; ctx.lineWidth=2; ctx.beginPath();
+      pts.forEach((p,ix)=>{ ix?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]); }); ctx.stroke();
+    }
+    pts.forEach(p=>{
+      ctx.fillStyle=color; ctx.beginPath(); ctx.arc(p[0],p[1],4,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#111827'; ctx.font='bold 11px system-ui'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.fillText(round(p[2], ind.decimals), p[0], p[1]-5);
+    });
+  }
+  serie('A', COLOR_A); serie('B', COLOR_B);
+  // etiquetas eje x (mostrar hasta ~7)
+  const step=Math.max(1, Math.ceil(n/7));
+  ctx.fillStyle='#6B7280'; ctx.font='11px system-ui'; ctx.textAlign='center'; ctx.textBaseline='top';
+  claves.forEach((k,i)=>{ if(i%step===0 || i===n-1){ ctx.fillText(k.slice(5), x(i), padT+plotH+8); } });
+  // leyenda
+  ctx.textAlign='left'; ctx.font='bold 11px system-ui';
+  ctx.fillStyle=COLOR_A; ctx.fillText('● A tradicional', padL+4, 6);
+  ctx.fillStyle=COLOR_B; ctx.fillText('● B freak', padL+110, 6);
+}
+
+/* ---------- EXPORTAR ---------- */
+function renderExportar(){
+  document.getElementById('n-ejemplo').textContent=registros().filter(r=>r.ejemplo).length;
+}
+function csvCell(v){ v=v==null?'':String(v); return /[",\n]/.test(v)? '"'+v.replace(/"/g,'""')+'"' : v; }
+function descargar(nombre, contenido, mime){
+  const blob=new Blob([contenido], {type:mime});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=nombre;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+}
+function exportarCSV(){
+  const recs=registros().slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const head=['fecha','hora','condicion','categoria','aciertos','total','porcentaje','minutos','concentracion','nota','anulado','ejemplo'];
+  const filas=recs.map(r=>{
+    const d=new Date(r.fecha);
+    return [d.toLocaleDateString('es-BO'), d.toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit'}),
+      r.condicion, r.categoria, r.aciertos, r.total, pct(r), r.minutos, r.concentracion,
+      r.nota||'', r.anulado?'sí':'no', r.ejemplo?'sí':'no'].map(csvCell).join(',');
+  });
+  const csv=[head.join(','), ...filas].join('\n');
+  descargar('parcial_freak_datos_'+hoyISO().slice(0,10)+'.csv', '\uFEFF'+csv, 'text/csv;charset=utf-8');
+  toast('CSV descargado');
+}
+function exportarResumen(){
+  const recs=activos().slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const A=recs.filter(r=>r.condicion==='A'), B=recs.filter(r=>r.condicion==='B');
+  const lineas=[];
+  lineas.push('Parcial Freak — Resumen de evidencias');
+  lineas.push('Generado: '+new Date().toLocaleString('es-BO'));
+  lineas.push('');
+  lineas.push('Objetivo: comprobar si el método freak (B) mejora el rendimiento frente al método tradicional (A).');
+  lineas.push('');
+  lineas.push('Registros válidos: '+recs.length+'  (A='+A.length+', B='+B.length+')');
+  if(recs.length){
+    lineas.push('Rango de fechas: '+fmtFecha(recs[0].fecha)+' → '+fmtFecha(recs[recs.length-1].fecha));
+  }
+  lineas.push('');
+  INDICADORES.forEach(ind=>{
+    const va=statsIndicador(A,ind.key), vb=statsIndicador(B,ind.key);
+    const f=v=> v===null?'—': round(v,ind.decimals)+(ind.unit==='%'?'%':' '+ind.unit);
+    lineas.push(ind.label+':  A = '+f(va)+'  |  B = '+f(vb));
+  });
+  lineas.push('');
+  lineas.push('Nota: comparación descriptiva; no prueba causalidad.');
+  lineas.push('');
+  lineas.push('— Registros —');
+  recs.forEach(r=>{
+    lineas.push(fmtFechaHora(r.fecha)+' | '+r.condicion+' | '+r.categoria+' | '+r.aciertos+'/'+r.total+' ('+pct(r)+'%) | '+r.minutos+' min | concentración '+r.concentracion+'/5'+(r.nota?' | '+r.nota:''));
+  });
+  descargar('parcial_freak_resumen_'+hoyISO().slice(0,10)+'.txt', lineas.join('\n'), 'text/plain;charset=utf-8');
+  toast('Resumen descargado');
+}
+function borrarEjemplos(){
+  const arr=registros().filter(r=>!r.ejemplo);
+  save(arr); toast('Datos de ejemplo borrados'); renderExportar(); renderInicio();
+}
+function borrarTodo(){
+  if(!confirm('¿Borrar TODOS los registros? Esta acción no se puede deshacer.')) return;
+  save([]); toast('Todo borrado'); renderExportar(); renderInicio();
+}
+
+/* ---------- arranque ---------- */
+registros();          // siembra datos de ejemplo la primera vez
+renderInicio();
+renderExportar();
+</script>
+</body>
+</html>
