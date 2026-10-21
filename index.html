@@ -4,127 +4,146 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#7C3AED" />
+<meta name="description" content="Parcial Freak: compara tu método de estudio tradicional vs freak con tus propios datos. INV 150 · UAGRM." />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Parcial Freak" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icon-192.png" type="image/png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <title>Parcial Freak</title>
 <style>
   :root{
-    --b:#7C3AED;            /* Condición B — método freak */
-    --b-light:#EDE9FE;
-    --b-soft:#F6F2FF;
-    --a:#6B7280;            /* Condición A — método tradicional */
-    --a-light:#E5E7EB;
-    --a-soft:#F3F4F6;
-    --bg:#F6F6FA;
-    --card:#FFFFFF;
-    --text:#111827;
-    --muted:#6B7280;
-    --line:#E5E7EB;
-    --ok:#059669;
-    --warn:#B45309;
-    --danger:#DC2626;
-    --radius:16px;
-    --shadow:0 1px 2px rgba(16,24,40,.06), 0 4px 12px rgba(16,24,40,.05);
+    --b:#7C3AED; --b-2:#5B21B6; --b-light:#EDE9FE; --b-soft:#F6F2FF;
+    --a:#6B7280; --a-light:#E5E7EB; --a-soft:#F3F4F6;
+    --bg:#F6F6FA; --card:#FFFFFF; --text:#111827; --muted:#6B7280; --line:#E5E7EB;
+    --ok:#059669; --warn:#B45309; --danger:#DC2626; --star:#F59E0B;
+    --grid:#E5E7EB; --chart-text:#6B7280; --chart-label:#111827;
+    --radius:16px; --shadow:0 1px 2px rgba(16,24,40,.06), 0 6px 18px rgba(16,24,40,.06);
+    --nav-bg:rgba(255,255,255,.94);
+  }
+  :root[data-theme="dark"]{
+    --b:#A78BFA; --b-2:#7C3AED; --b-light:#2E2450; --b-soft:#211A38;
+    --a:#9CA3AF; --a-light:#2A2A36; --a-soft:#1E1E28;
+    --bg:#0F0F15; --card:#1A1A24; --text:#F3F4F6; --muted:#9CA3AF; --line:#2A2A38;
+    --grid:#2A2A38; --chart-text:#9CA3AF; --chart-label:#F3F4F6;
+    --nav-bg:rgba(18,18,26,.94);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.35);
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html,body{ margin:0; padding:0; }
   body{
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg); color:var(--text); line-height:1.45;
-    font-size:16px; -webkit-text-size-adjust:100%;
+    font-size:16px; -webkit-text-size-adjust:100%; transition:background .25s,color .25s;
   }
   #app{ max-width:480px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
-  main{ flex:1; padding:16px 16px 92px; }
-  .view{ display:none; animation:fade .18s ease; }
-  .view.active{ display:block; }
-  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
 
-  h1,h2,h3{ margin:0; }
-  .title{ font-size:22px; font-weight:800; letter-spacing:-.3px; }
-  .subtitle{ color:var(--muted); font-size:14px; margin-top:2px; }
-  .muted{ color:var(--muted); }
+  header.top{ position:sticky; top:0; z-index:15; display:flex; align-items:center; gap:10px;
+    padding:12px 16px; background:var(--nav-bg); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+  header.top .logo{ width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,var(--b),var(--b-2));
+    display:grid; place-items:center; font-size:20px; box-shadow:var(--shadow); }
+  header.top .name{ flex:1; }
+  header.top .name b{ font-size:16px; letter-spacing:-.2px; display:block; }
+  header.top .name span{ font-size:11.5px; color:var(--muted); }
+  header.top .tgl{ width:42px; height:42px; border-radius:12px; border:1.5px solid var(--line); background:var(--card);
+    font-size:19px; cursor:pointer; display:grid; place-items:center; }
+
+  main{ flex:1; padding:14px 16px 92px; }
+  .view{ display:none; animation:fade .2s ease; }
+  .view.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
 
   .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); margin-bottom:14px; }
-  .card h3{ font-size:15px; font-weight:700; margin-bottom:8px; }
+  .card h3{ font-size:15px; font-weight:800; margin:0 0 8px; }
   .card p{ font-size:14px; margin:6px 0; }
-  .pill{ display:inline-block; font-size:12px; font-weight:700; padding:2px 9px; border-radius:999px; }
+  .muted{ color:var(--muted); }
+  .pill{ display:inline-block; font-size:11.5px; font-weight:800; padding:2px 9px; border-radius:999px; vertical-align:middle; }
   .pill-a{ background:var(--a-soft); color:var(--a); }
   .pill-b{ background:var(--b-light); color:var(--b); }
 
-  .hero{ background:linear-gradient(135deg,#7C3AED 0%,#5B21B6 100%); color:#fff; border-radius:var(--radius); padding:20px 18px; box-shadow:var(--shadow); }
-  .hero h1{ font-size:24px; font-weight:800; }
-  .hero .tag{ font-size:13px; opacity:.9; margin-top:4px; }
+  .hero{ background:linear-gradient(135deg,var(--b) 0%,var(--b-2) 100%); color:#fff; border-radius:var(--radius); padding:20px 18px; box-shadow:var(--shadow); position:relative; overflow:hidden; }
+  .hero::after{ content:""; position:absolute; right:-40px; top:-40px; width:150px; height:150px; border-radius:50%; background:rgba(255,255,255,.08); }
+  .hero h1{ font-size:23px; font-weight:800; margin:0; }
+  .hero .tag{ font-size:13px; opacity:.92; margin-top:3px; }
+  .hero .streak{ margin-top:12px; display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16);
+    padding:6px 12px; border-radius:999px; font-size:13px; font-weight:700; }
 
   .btn{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
-    border:none; border-radius:14px; padding:15px 16px; font-size:16px; font-weight:700;
-    cursor:pointer; transition:transform .05s, opacity .15s; }
+    border:none; border-radius:14px; padding:15px 16px; font-size:16px; font-weight:700; cursor:pointer;
+    transition:transform .05s, opacity .15s, background .2s; }
   .btn:active{ transform:scale(.985); }
-  .btn-primary{ background:var(--b); color:#fff; }
-  .btn-outline{ background:#fff; color:var(--text); border:1.5px solid var(--line); }
+  .btn-primary{ background:linear-gradient(135deg,var(--b),var(--b-2)); color:#fff; }
+  .btn-outline{ background:var(--card); color:var(--text); border:1.5px solid var(--line); }
   .btn-ghost{ background:transparent; color:var(--muted); border:1px solid var(--line); }
   .btn-danger{ background:#FEE2E2; color:var(--danger); border:1px solid #FECACA; }
-  .btn-sm{ padding:9px 12px; font-size:14px; border-radius:11px; }
-  .btn:disabled{ opacity:.5; cursor:not-allowed; }
+  .btn-wa{ background:#25D366; color:#fff; }
+  .btn-sm{ padding:10px 12px; font-size:14px; border-radius:11px; }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+  /* Fab */
+  #fab{ position:fixed; right:18px; bottom:86px; width:58px; height:58px; border-radius:50%;
+    border:none; background:linear-gradient(135deg,var(--b),var(--b-2)); color:#fff; font-size:30px; font-weight:700;
+    box-shadow:0 8px 22px rgba(124,58,237,.45); cursor:pointer; z-index:14; display:grid; place-items:center;
+    transition:transform .15s; }
+  #fab:active{ transform:scale(.9); }
 
   /* Bottom nav */
   nav.bottom{ position:fixed; bottom:0; left:50%; transform:translateX(-50%);
-    width:100%; max-width:480px; background:rgba(255,255,255,.96); backdrop-filter:blur(8px);
-    border-top:1px solid var(--line); display:flex; padding:6px 4px calc(6px + env(safe-area-inset-bottom)); z-index:20; }
+    width:100%; max-width:480px; background:var(--nav-bg); backdrop-filter:blur(10px);
+    border-top:1px solid var(--line); display:flex; padding:6px 2px calc(6px + env(safe-area-inset-bottom)); z-index:20; }
   nav.bottom button{ flex:1; background:none; border:none; cursor:pointer; color:var(--muted);
-    display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; padding:6px 2px; font-weight:600; }
+    display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10.5px; padding:6px 2px; font-weight:600; }
   nav.bottom button .ico{ font-size:21px; line-height:1; }
   nav.bottom button.active{ color:var(--b); }
 
   /* Form */
   .seg{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .seg button{ border:2px solid var(--line); background:#fff; border-radius:14px; padding:13px 10px; cursor:pointer; text-align:left; }
+  .seg button{ border:2px solid var(--line); background:var(--card); border-radius:14px; padding:13px 10px; cursor:pointer; text-align:left; }
   .seg button .t{ font-weight:800; font-size:15px; }
   .seg button .d{ font-size:12px; color:var(--muted); margin-top:2px; }
   .seg button.sel-a{ border-color:var(--a); background:var(--a-soft); }
   .seg button.sel-b{ border-color:var(--b); background:var(--b-soft); }
-
   .chips{ display:flex; flex-wrap:wrap; gap:8px; }
-  .chip{ border:1.5px solid var(--line); background:#fff; border-radius:999px; padding:9px 14px;
+  .chip{ border:1.5px solid var(--line); background:var(--card); border-radius:999px; padding:9px 14px;
     font-size:14px; font-weight:600; cursor:pointer; color:var(--text); }
   .chip.active{ background:var(--b); border-color:var(--b); color:#fff; }
-
   .stepper{ display:flex; align-items:center; gap:10px; }
   .stepper button{ width:48px; height:48px; border-radius:12px; border:1.5px solid var(--line);
-    background:#fff; font-size:24px; font-weight:700; cursor:pointer; color:var(--text); }
+    background:var(--card); font-size:24px; font-weight:700; cursor:pointer; color:var(--text); }
   .stepper .val{ flex:1; text-align:center; font-size:28px; font-weight:800; font-variant-numeric:tabular-nums; }
   .stepper .lbl{ font-size:12px; color:var(--muted); text-align:center; margin-top:-2px; }
   .field{ margin-bottom:18px; }
-  .field > label{ display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:.3px; }
-
-  /* Stars */
+  .field > label{ display:block; font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:.3px; }
   .stars{ display:flex; gap:8px; justify-content:center; }
   .stars button{ background:none; border:none; font-size:40px; cursor:pointer; line-height:1; color:var(--line); padding:0 2px; }
-  .stars button.on{ color:#F59E0B; }
-
+  .stars button.on{ color:var(--star); }
   textarea{ width:100%; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-size:15px;
-    font-family:inherit; resize:vertical; min-height:74px; }
+    font-family:inherit; resize:vertical; min-height:74px; background:var(--card); color:var(--text); }
   textarea:focus{ outline:none; border-color:var(--b); }
 
-  /* Stat / compare */
   .cmp{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .cmp .box{ border-radius:14px; padding:14px; border:1.5px solid var(--line); }
+  .cmp .box{ border-radius:14px; padding:14px; border:1.5px solid var(--line); background:var(--card); }
   .cmp .box.a{ background:var(--a-soft); border-color:var(--a-light); }
   .cmp .box.b{ background:var(--b-soft); border-color:var(--b-light); }
   .cmp .k{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; }
   .cmp .a .k{ color:var(--a); } .cmp .b .k{ color:var(--b); }
   .cmp .v{ font-size:26px; font-weight:800; margin-top:2px; font-variant-numeric:tabular-nums; }
   .cmp .u{ font-size:12px; color:var(--muted); }
-
   .delta{ font-size:13px; font-weight:700; margin-top:6px; }
   .delta.pos{ color:var(--ok); } .delta.neg{ color:var(--danger); } .delta.zero{ color:var(--muted); }
 
   .banner{ border-radius:12px; padding:12px 14px; font-size:13.5px; font-weight:600; margin-bottom:14px; }
   .banner.warn{ background:#FEF3C7; color:var(--warn); border:1px solid #FDE68A; }
   .banner.ok{ background:#D1FAE5; color:#065F46; border:1px solid #A7F3D0; }
+  :root[data-theme="dark"] .banner.warn{ background:#3A2E12; color:#FBBF24; border-color:#5C4515; }
+  :root[data-theme="dark"] .banner.ok{ background:#0B3325; color:#34D399; border-color:#0D4A33; }
 
   .segbar{ display:flex; gap:6px; margin-bottom:10px; }
-  .segbar button{ flex:1; border:1.5px solid var(--line); background:#fff; border-radius:10px;
-    padding:9px 6px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--muted); }
+  .segbar button{ flex:1; border:1.5px solid var(--line); background:var(--card); border-radius:10px;
+    padding:9px 6px; font-size:12px; font-weight:700; cursor:pointer; color:var(--muted); }
   .segbar button.active{ background:var(--b); border-color:var(--b); color:#fff; }
-
   canvas{ width:100%; height:auto; display:block; }
 
   ul.msg{ list-style:none; margin:0; padding:0; }
@@ -136,64 +155,77 @@
   .row .meta{ font-size:12.5px; color:var(--muted); }
   .row .anulado{ text-decoration:line-through; opacity:.55; }
   .tag-anulado{ color:var(--danger); font-size:11px; font-weight:800; }
-
   .disclaimer{ font-size:12px; color:var(--muted); border-left:3px solid var(--line); padding-left:10px; margin-top:12px; }
+  .empty{ text-align:center; padding:22px 10px; color:var(--muted); }
+  .empty .big{ font-size:40px; }
 
-  #toast{ position:fixed; bottom:88px; left:50%; transform:translateX(-50%) translateY(20px);
+  /* Feedback */
+  .fb-channel{ display:grid; gap:10px; }
+  .fb-star{ display:flex; gap:8px; justify-content:center; }
+  .fb-star button{ background:none; border:none; font-size:42px; cursor:pointer; color:var(--line); padding:0 3px; }
+  .fb-star button.on{ color:var(--star); }
+
+  /* Onboarding modal */
+  #modal{ position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:20px; }
+  #modal.show{ display:flex; }
+  #modal .back{ position:absolute; inset:0; background:rgba(0,0,0,.5); backdrop-filter:blur(2px); }
+  #modal .panel{ position:relative; background:var(--card); border:1px solid var(--line); border-radius:20px;
+    padding:22px; max-width:400px; width:100%; box-shadow:0 20px 50px rgba(0,0,0,.3); }
+  #modal .panel h2{ margin:0 0 8px; font-size:20px; }
+  #modal .panel .steps{ display:grid; gap:10px; margin:16px 0; }
+  #modal .panel .step{ display:flex; gap:10px; align-items:flex-start; font-size:14px; }
+  #modal .panel .step .n{ width:24px; height:24px; flex-shrink:0; border-radius:50%; background:var(--b); color:#fff;
+    display:grid; place-items:center; font-size:12px; font-weight:800; }
+
+  #toast{ position:fixed; bottom:96px; left:50%; transform:translateX(-50%) translateY(20px);
     background:#111827; color:#fff; padding:11px 18px; border-radius:999px; font-size:14px; font-weight:600;
-    opacity:0; pointer-events:none; transition:all .25s; z-index:40; max-width:88%; text-align:center; }
+    opacity:0; pointer-events:none; transition:all .25s; z-index:60; max-width:88%; text-align:center; }
   #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 <div id="app">
+
+  <header class="top">
+    <div class="logo">🎯</div>
+    <div class="name"><b>Parcial Freak</b><span>INV 150 · UAGRM · Santa Cruz</span></div>
+    <button class="tgl" id="tema-btn" onclick="toggleTema()" title="Modo oscuro">🌙</button>
+  </header>
+
   <main>
 
     <!-- ============ INICIO ============ -->
     <section id="view-inicio" class="view active">
       <div class="hero">
-        <h1>Parcial Freak 🎯</h1>
-        <div class="tag">Compara tu método de estudio · UAGRM · Santa Cruz, Bolivia</div>
+        <h1>Comprueba tu método 🎯</h1>
+        <div class="tag">Tradicional (gris) vs Freak (violeta) · con tus propios datos</div>
+        <div class="streak" id="inicio-racha">🔥 Cargando racha…</div>
       </div>
 
       <div class="card">
         <h3>El problema</h3>
-        <p><span class="pill pill-a">Pregunta clásica</span><br>
-        «¿Cómo me obligo a estudiar <b>más horas</b> para retener mejor el material antes del examen?»</p>
-        <p><span class="pill pill-b">Pregunta freak</span><br>
-        «¿Cómo rindo mejor invirtiendo <b>menos horas</b>, convirtiendo a la IA en un sistema entrenado con <b>mis propios errores</b> en vez de usarla como tutor genérico?»</p>
+        <p><span class="pill pill-a">Clásica</span> «¿Cómo me obligo a estudiar <b>más horas</b> para retener mejor?»</p>
+        <p><span class="pill pill-b">Freak</span> «¿Cómo rindo mejor con <b>menos horas</b>, usando la IA entrenada con <b>mis errores</b>?»</p>
       </div>
 
       <div class="card">
-        <h3>Hipótesis</h3>
-        <p>Si cambio <b>el método de estudio</b> —de relectura y subrayado pasivo a <b>práctica activa con IA entrenada en mis errores</b>—, entonces mi <b>rendimiento en el parcial</b> mejora, medido con el <b>% de acierto</b> en preguntas del tema.</p>
-        <p class="muted" style="font-size:13px;">Causa raíz probable: estudio el problema equivocado (método pasivo), no estudio poco.</p>
-      </div>
-
-      <div class="card">
-        <h3>Tu experimento hasta ahora</h3>
+        <h3>Tu experimento</h3>
         <div class="cmp" id="inicio-stats"></div>
       </div>
 
-      <button class="btn btn-primary" onclick="empezarRegistro()">➕ Registrar sesión de estudio</button>
+      <button class="btn btn-primary" onclick="empezarRegistro()">➕ Registrar sesión</button>
     </section>
 
     <!-- ============ REGISTRAR ============ -->
     <section id="view-registrar" class="view">
-      <h2 class="title">Registrar</h2>
-      <p class="subtitle">Paso 1 de 2 · marca cómo estudiaste hoy</p>
+      <h2 style="margin:0 0 2px;">Registrar</h2>
+      <p class="muted" style="margin:0 0 14px; font-size:13.5px;">Paso 1 de 2 · cómo estudiaste hoy</p>
 
       <div class="card field">
         <label>Condición</label>
         <div class="seg" id="seg-cond">
-          <button data-c="A" class="sel-a">
-            <div class="t">A · Tradicional</div>
-            <div class="d">Releer y subrayar apuntes</div>
-          </button>
-          <button data-c="B">
-            <div class="t">B · Freak</div>
-            <div class="d">Practicar con IA entrenada en tus errores</div>
-          </button>
+          <button data-c="A" class="sel-a"><div class="t">A · Tradicional</div><div class="d">Releer y subrayar</div></button>
+          <button data-c="B"><div class="t">B · Freak</div><div class="d">IA con tus errores</div></button>
         </div>
       </div>
 
@@ -203,10 +235,10 @@
       </div>
 
       <div class="card field">
-        <label>Aciertos (preguntas correctas)</label>
+        <label>Aciertos</label>
         <div class="stepper">
           <button onclick="step('aciertos',-1)">−</button>
-          <div><div class="val" id="v-aciertos">0</div><div class="lbl">aciertos</div></div>
+          <div><div class="val" id="v-aciertos">0</div><div class="lbl">correctas</div></div>
           <button onclick="step('aciertos',+1)">＋</button>
         </div>
       </div>
@@ -222,7 +254,7 @@
       </div>
 
       <div class="card field">
-        <label>Minutos de estudio (opcional)</label>
+        <label>Minutos (opcional)</label>
         <div class="stepper">
           <button onclick="step('minutos',-5)">−</button>
           <div><div class="val" id="v-minutos">0</div><div class="lbl">minutos</div></div>
@@ -235,8 +267,8 @@
 
     <!-- ============ CIERRE ============ -->
     <section id="view-cierre" class="view">
-      <h2 class="title">Cierre</h2>
-      <p class="subtitle">Paso 2 de 2 · califica y guarda el registro</p>
+      <h2 style="margin:0 0 2px;">Cierre</h2>
+      <p class="muted" style="margin:0 0 14px; font-size:13.5px;">Paso 2 de 2 · califica y guarda</p>
 
       <div class="card" id="cierre-resumen"></div>
 
@@ -257,8 +289,8 @@
 
     <!-- ============ RESULTADOS ============ -->
     <section id="view-resultados" class="view">
-      <h2 class="title">Resultados</h2>
-      <p class="subtitle">A (gris) vs B (violeta) · tus propios datos</p>
+      <h2 style="margin:0 0 2px;">Resultados</h2>
+      <p class="muted" style="margin:0 0 14px; font-size:13.5px;">A (gris) vs B (violeta)</p>
 
       <div id="resultado-banner"></div>
 
@@ -278,7 +310,7 @@
       <div class="card">
         <h3>Qué dicen tus datos</h3>
         <ul class="msg" id="mensajes"></ul>
-        <div class="disclaimer">⚠️ Esto es una <b>comparación descriptiva</b>. No prueba que una condición <b>cause</b> la otra: pueden influir el tema, el cansancio, el día u otros factores.</div>
+        <div class="disclaimer">⚠️ Comparación <b>descriptiva</b>: no prueba que una condición <b>cause</b> la otra.</div>
       </div>
 
       <div class="card">
@@ -289,25 +321,53 @@
 
     <!-- ============ EXPORTAR ============ -->
     <section id="view-exportar" class="view">
-      <h2 class="title">Exportar</h2>
-      <p class="subtitle">Lleva tus datos como anexo de evidencias</p>
+      <h2 style="margin:0 0 2px;">Exportar</h2>
+      <p class="muted" style="margin:0 0 14px; font-size:13.5px;">Anexo de evidencias</p>
 
       <div class="card">
         <h3>🔒 Privacidad</h3>
-        <p>Los datos quedan <b>guardados en este dispositivo</b> (navegador). No se envían a ningún servidor y no se pide nombre real, correo ni edad.</p>
+        <p>Los datos quedan <b>en este dispositivo</b>. No se envían a ningún servidor ni se pide nombre, correo o edad.</p>
       </div>
 
       <div class="card">
         <h3>Descargar</h3>
-        <button class="btn btn-outline" onclick="exportarCSV()" style="margin-bottom:10px;">⬇ Descargar datos (CSV)</button>
-        <button class="btn btn-outline" onclick="exportarResumen()">⬇ Descargar resumen (texto con fechas)</button>
+        <button class="btn btn-outline" onclick="exportarCSV()" style="margin-bottom:10px;">⬇ Datos (CSV)</button>
+        <button class="btn btn-outline" onclick="exportarResumen()">⬇ Resumen con fechas (txt)</button>
       </div>
 
       <div class="card">
         <h3>Datos de ejemplo</h3>
-        <p class="muted" style="font-size:13px;">Incluye <span id="n-ejemplo">0</span> registro(s) de ejemplo marcados como «Datos de ejemplo».</p>
+        <p class="muted" style="font-size:13px;">Hay <span id="n-ejemplo">0</span> registro(s) de ejemplo.</p>
         <button class="btn btn-danger btn-sm" onclick="borrarEjemplos()" style="margin-bottom:10px;">🗑 Borrar datos de ejemplo</button>
         <button class="btn btn-ghost btn-sm" onclick="borrarTodo()">Borrar todo (reiniciar)</button>
+      </div>
+    </section>
+
+    <!-- ============ COMENTARIOS ============ -->
+    <section id="view-comentarios" class="view">
+      <h2 style="margin:0 0 2px;">Comentarios 💬</h2>
+      <p class="muted" style="margin:0 0 14px; font-size:13.5px;">Cuéntale al profe qué tal te funcionó la app</p>
+
+      <div class="card">
+        <h3>¿Qué te pareció la app?</h3>
+        <div class="fb-star" id="fb-stars"></div>
+        <p class="muted" style="font-size:13px; text-align:center; margin-top:6px;" id="fb-stars-lbl">Toca una estrella</p>
+      </div>
+
+      <div class="card field">
+        <label>Tu comentario (opcional)</label>
+        <textarea id="fb-comentario" placeholder="Ej.: me sirvió para ver que B me da más aciertos; me gustaría poder…"></textarea>
+      </div>
+
+      <div class="card">
+        <h3>Enviar</h3>
+        <div class="fb-channel">
+          <button class="btn btn-wa" onclick="enviarFeedback('whatsapp')">💬 Enviar por WhatsApp</button>
+          <button class="btn btn-outline" onclick="enviarFeedback('email')">✉️ Enviar por correo</button>
+          <button class="btn btn-outline" onclick="enviarFeedback('form')" id="btn-form">📝 Responder formulario</button>
+          <button class="btn btn-ghost" onclick="enviarFeedback('copy')">📋 Copiar comentario</button>
+        </div>
+        <p class="muted" style="font-size:12px; margin-top:10px;">El comentario se arma con tu valoración y texto. No incluye tu nombre.</p>
       </div>
     </section>
 
@@ -318,75 +378,88 @@
     <button data-v="registrar"><span class="ico">✏️</span>Registrar</button>
     <button data-v="resultados"><span class="ico">📊</span>Resultados</button>
     <button data-v="exportar"><span class="ico">⬇️</span>Exportar</button>
+    <button data-v="comentarios"><span class="ico">💬</span>Comentarios</button>
   </nav>
+
+  <button id="fab" onclick="empezarRegistro()" title="Registrar sesión">＋</button>
+</div>
+
+<!-- Onboarding -->
+<div id="modal">
+  <div class="back" onclick="cerrarOnboarding()"></div>
+  <div class="panel">
+    <h2>¡Hola! 👋</h2>
+    <p class="muted" style="margin:0;">Bienvenido a <b>Parcial Freak</b>. Compara dos formas de estudiar para descubrir cuál te funciona.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div>Registra cada sesión: condición <b>A</b> (releer) o <b>B</b> (IA con tus errores), tus aciertos y tu concentración.</div></div>
+      <div class="step"><div class="n">2</div><div>En <b>Resultados</b> mira la comparación y la línea de tiempo.</div></div>
+      <div class="step"><div class="n">3</div><div>Al final, envía tu <b>comentario</b> al profe 💬.</div></div>
+    </div>
+    <button class="btn btn-primary" onclick="cerrarOnboarding()">¡Empezar!</button>
+  </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
 /* ============================================================
-   PARCIAL FREAK — app móvil en español (UAGRM · Santa Cruz)
-   Datos en localStorage. Sin dependencias externas.
+   PARCIAL FREAK — app móvil (PWA) en español · UAGRM · Santa Cruz
    ============================================================ */
 'use strict';
+
+/* ---------- CONFIGURACIÓN (editar aquí) ---------- */
+const CONFIG = {
+  WHATSAPP: '',                // ej. '59170000000'  (sin + ni espacios)
+  EMAIL: 'felixber@gmail.com', // correo del profe
+  FORM_URL: ''                 // enlace a Google Form (opcional)
+};
 
 const STORAGE_KEY = 'parcial_freak_registros_v1';
 const COLOR_A = '#6B7280', COLOR_A_LIGHT = '#9CA3AF';
 const COLOR_B = '#7C3AED', COLOR_B_LIGHT = '#A78BFA';
 const COLOR_A_FILL = '#E5E7EB';
 const COLOR_B_FILL = '#EDE9FE';
-
 const CATEGORIAS = ['Media','Mediana','Moda','Datos agrupados','Mixto','Otro'];
 const NOMBRES = { A:'Método tradicional', B:'Método freak (IA con tus errores)' };
-
 const INDICADORES = [
-  { key:'acierto',      label:'% acierto',     unit:'%',  max:100, decimals:0 },
-  { key:'concentracion',label:'Concentración', unit:'/5',  max:5,   decimals:1 },
-  { key:'minutos',      label:'Minutos/sesión',unit:'min', max:null, decimals:0 }
+  { key:'acierto',       label:'% acierto',      unit:'%',   max:100, decimals:0 },
+  { key:'concentracion', label:'Concentración',  unit:'/5',  max:5,   decimals:1 },
+  { key:'minutos',       label:'Minutos/sesión', unit:'min', max:null, decimals:0 }
 ];
 
-let draft = null;          // registro en curso
-let indSel = 'acierto';    // indicador seleccionado en Resultados
-
-/* Polyfill de roundRect (Safari < 16) */
-if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
-  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r){
-    r = Math.min(r, w/2, h/2);
-    this.moveTo(x+r, y);
-    this.arcTo(x+w, y, x+w, y+h, r);
-    this.arcTo(x+w, y+h, x, y+h, r);
-    this.arcTo(x, y+h, x, y, r);
-    this.arcTo(x, y, x+w, y, r);
-    this.closePath();
-    return this;
-  };
-}
+let draft = null;
+let indSel = 'acierto';
+let fbRating = 0;
 
 /* ---------- utilidades ---------- */
-function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
 function hoyISO(){ return new Date().toISOString(); }
+function toLocalISO(d){ const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
 function fmtFecha(iso){ const d=new Date(iso); return d.toLocaleDateString('es-BO',{day:'2-digit',month:'short'}); }
 function fmtFechaHora(iso){ const d=new Date(iso); return d.toLocaleDateString('es-BO',{day:'2-digit',month:'short'})+' · '+d.toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit'}); }
 function pct(r){ return r.total>0 ? Math.round(r.aciertos/r.total*100) : 0; }
-function avg(nums){ const n=nums.filter(v=>v!==null && v!==undefined); if(!n.length) return null; return n.reduce((a,b)=>a+b,0)/n.length; }
+function avg(n){ const a=n.filter(v=>v!==null&&v!==undefined); return a.length? a.reduce((x,y)=>x+y,0)/a.length : null; }
 function round(v,d){ if(v===null) return null; const m=Math.pow(10,d||0); return Math.round(v*m)/m; }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+/* ---------- tema (modo oscuro) ---------- */
+function aplicarTema(t){ document.documentElement.dataset.theme=t; document.getElementById('tema-btn').textContent = t==='dark'?'☀️':'🌙'; }
+function toggleTema(){
+  const cur = document.documentElement.dataset.theme==='dark' ? 'light' : 'dark';
+  localStorage.setItem('pf_theme', cur); aplicarTema(cur);
+  if(document.getElementById('view-resultados').classList.contains('active')) renderResultados();
+}
+
 /* ---------- almacenamiento ---------- */
 function load(){ try{ const r=localStorage.getItem(STORAGE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } }
-function save(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+function save(a){ localStorage.setItem(STORAGE_KEY, JSON.stringify(a)); }
 function registros(){ let d=load(); if(d===null){ d=seedEjemplos(); save(d); } return d; }
 function activos(){ return registros().filter(r=>!r.anulado); }
 
 function seedEjemplos(){
   const A='A', B='B';
-  function R(cond,cat,ac,tot,min,conc,nota,dia){
-    return { id:uid(), condicion:cond, categoria:cat, aciertos:ac, total:tot,
-             minutos:min, concentracion:conc, nota:nota||'', fecha:dia+'T20:30:00',
-             anulado:false, ejemplo:true };
-  }
+  function R(c,cat,ac,tot,min,con,nota,dia){ return {id:uid(),condicion:c,categoria:cat,aciertos:ac,total:tot,minutos:min,concentracion:con,nota:nota||'',fecha:dia+'T20:30:00',anulado:false,ejemplo:true}; }
   return [
-    // Condición A — método tradicional (gris) · 7 sesiones
     R(A,'Media',8,20,50,2,'Releí y subrayé; se me olvidaba al responder.','2026-04-28'),
     R(A,'Media',10,20,55,2,'','2026-04-29'),
     R(A,'Mediana',9,20,50,3,'','2026-04-30'),
@@ -394,7 +467,6 @@ function seedEjemplos(){
     R(A,'Moda',10,20,45,2,'','2026-05-02'),
     R(A,'Datos agrupados',8,20,55,2,'','2026-05-03'),
     R(A,'Mixto',12,25,60,3,'','2026-05-04'),
-    // Condición B — método freak (violeta) · 9 sesiones (datos del informe)
     R(B,'Media',9,20,45,3,'Día 1: subí recursos del examen a la IA.','2026-05-05'),
     R(B,'Media',11,20,40,4,'El error del lunes casi desaparece.','2026-05-06'),
     R(B,'Datos agrupados',13,20,40,4,'','2026-05-07'),
@@ -411,66 +483,59 @@ function seedEjemplos(){
 function show(v){
   document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
-  document.querySelectorAll('nav.bottom button').forEach(b=>b.classList.toggle('active', b.dataset.v===v));
+  document.querySelectorAll('nav.bottom button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));
   window.scrollTo({top:0});
-  if(v==='resultados') renderResultados();
   if(v==='inicio') renderInicio();
+  if(v==='resultados') renderResultados();
   if(v==='exportar') renderExportar();
+  if(v==='comentarios') renderComentarios();
 }
 document.querySelectorAll('nav.bottom button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.v)));
 
-function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200); }
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2300); }
 
 /* ---------- INICIO ---------- */
 function renderInicio(){
   const recs=activos();
-  const a=recs.filter(r=>r.condicion==='A').length;
-  const b=recs.filter(r=>r.condicion==='B').length;
-  const ultimos=recs.slice().sort((x,y)=>y.fecha.localeCompare(x.fecha));
-  const ult=ultimos[0];
+  const a=recs.filter(r=>r.condicion==='A').length, b=recs.filter(r=>r.condicion==='B').length;
+  const ult=[...recs].sort((x,y)=>y.fecha.localeCompare(x.fecha))[0];
+  document.getElementById('inicio-racha').textContent = '🔥 Racha de ' + calcularRacha() + ' día(s)';
   document.getElementById('inicio-stats').innerHTML =
     '<div class="box a"><div class="k">Condición A</div><div class="v">'+a+'</div><div class="u">sesiones</div></div>'+
     '<div class="box b"><div class="k">Condición B</div><div class="v">'+b+'</div><div class="u">sesiones</div></div>'+
-    '<div class="box" style="grid-column:1/-1;background:#fff;"><div class="k">Último registro</div>'+
-    '<div class="v" style="font-size:20px;">'+(ult? pct(ult)+'% de acierto':'—')+'</div>'+
-    '<div class="u">'+(ult? fmtFechaHora(ult.fecha)+' · '+NOMBRES[ult.condicion]:'Aún no registras nada')+'</div></div>';
+    '<div class="box" style="grid-column:1/-1;"><div class="k">Último registro</div><div class="v" style="font-size:20px;">'+(ult?pct(ult)+'% de acierto':'—')+'</div>'+
+    '<div class="u">'+(ult?fmtFechaHora(ult.fecha)+' · '+NOMBRES[ult.condicion]:'Aún no registras nada')+'</div></div>';
 }
-function empezarRegistro(){ draft={condicion:'B', categoria:'Media', aciertos:0, total:0, minutos:0, concentracion:0, nota:''}; renderRegistrar(); show('registrar'); }
+function calcularRacha(){
+  const dias=new Set(activos().map(r=>r.fecha.slice(0,10)));
+  let racha=0; const d=new Date();
+  if(!dias.has(toLocalISO(d))) d.setDate(d.getDate()-1);
+  while(dias.has(toLocalISO(d))){ racha++; d.setDate(d.getDate()-1); }
+  return racha;
+}
+function empezarRegistro(){ draft={condicion:'B',categoria:'Media',aciertos:0,total:0,minutos:0,concentracion:0,nota:''}; renderRegistrar(); show('registrar'); }
 
 /* ---------- REGISTRAR ---------- */
 function renderRegistrar(){
   const d=draft||{condicion:'B',categoria:'Media'};
-  // condición
-  document.querySelectorAll('#seg-cond button').forEach(b=>{
-    b.classList.toggle('sel-a', b.dataset.c==='A' && d.condicion==='A');
-    b.classList.toggle('sel-b', b.dataset.c==='B' && d.condicion==='B');
-  });
-  // categorías
+  document.querySelectorAll('#seg-cond button').forEach(b=>{ b.classList.toggle('sel-a',b.dataset.c==='A'&&d.condicion==='A'); b.classList.toggle('sel-b',b.dataset.c==='B'&&d.condicion==='B'); });
   const cc=document.getElementById('chips-cat');
   cc.innerHTML=CATEGORIAS.map(c=>'<button class="chip'+(d.categoria===c?' active':'')+'" data-cat="'+esc(c)+'">'+esc(c)+'</button>').join('');
   cc.querySelectorAll('.chip').forEach(ch=>ch.addEventListener('click',()=>{ draft.categoria=ch.dataset.cat; renderRegistrar(); }));
-  // valores
   document.getElementById('v-aciertos').textContent=d.aciertos;
   document.getElementById('v-total').textContent=d.total;
   document.getElementById('v-minutos').textContent=d.minutos;
   document.getElementById('pct-preview').textContent = d.total>0 ? (Math.round(d.aciertos/d.total*100)+' %') : '— %';
 }
-document.getElementById('seg-cond').addEventListener('click',e=>{
-  const b=e.target.closest('button'); if(!b) return;
-  draft.condicion=b.dataset.c; renderRegistrar();
-});
+document.getElementById('seg-cond').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; draft.condicion=b.dataset.c; renderRegistrar(); });
 function step(campo,delta){
   const d=draft;
-  if(campo==='aciertos'){ d.aciertos=Math.max(0, d.aciertos+delta); if(d.aciertos>d.total) d.total=d.aciertos; }
-  if(campo==='total'){ d.total=Math.max(0, d.total+delta); if(d.aciertos>d.total) d.aciertos=d.total; }
-  if(campo==='minutos'){ d.minutos=Math.max(0, d.minutos+delta); }
+  if(campo==='aciertos'){ d.aciertos=Math.max(0,d.aciertos+delta); if(d.aciertos>d.total) d.total=d.aciertos; }
+  if(campo==='total'){ d.total=Math.max(0,d.total+delta); if(d.aciertos>d.total) d.aciertos=d.total; }
+  if(campo==='minutos'){ d.minutos=Math.max(0,d.minutos+delta); }
   renderRegistrar();
 }
-function irACierre(){
-  if(!draft.total){ toast('Indica el total de preguntas'); return; }
-  renderCierre(); show('cierre');
-}
+function irACierre(){ if(!draft.total){ toast('Indica el total de preguntas'); return; } renderCierre(); show('cierre'); }
 function volverARegistrar(){ renderRegistrar(); show('registrar'); }
 
 /* ---------- CIERRE ---------- */
@@ -479,277 +544,205 @@ function renderCierre(){
   document.getElementById('cierre-resumen').innerHTML =
     '<div class="cmp">'+
       '<div class="box '+(d.condicion==='A'?'a':'b')+'"><div class="k">Condición '+d.condicion+'</div><div class="v" style="font-size:16px;">'+esc(NOMBRES[d.condicion])+'</div></div>'+
-      '<div class="box" style="background:#fff;"><div class="k">Aciertos</div><div class="v" style="font-size:16px;">'+d.aciertos+' / '+d.total+'</div></div>'+
-      '<div class="box" style="background:#fff;"><div class="k">% acierto</div><div class="v" style="font-size:16px;">'+(d.total>0?Math.round(d.aciertos/d.total*100)+'%':'—')+'</div></div>'+
-      '<div class="box" style="background:#fff;"><div class="k">Tema</div><div class="v" style="font-size:16px;">'+esc(d.categoria)+'</div></div>'+
+      '<div class="box"><div class="k">Aciertos</div><div class="v" style="font-size:16px;">'+d.aciertos+' / '+d.total+'</div></div>'+
+      '<div class="box"><div class="k">% acierto</div><div class="v" style="font-size:16px;">'+(d.total>0?Math.round(d.aciertos/d.total*100)+'%':'—')+'</div></div>'+
+      '<div class="box"><div class="k">Tema</div><div class="v" style="font-size:16px;">'+esc(d.categoria)+'</div></div>'+
     '</div>';
   const st=document.getElementById('stars');
   st.innerHTML=[1,2,3,4,5].map(n=>'<button data-n="'+n+'" class="'+(n<=d.concentracion?'on':'')+'">★</button>').join('');
   st.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ draft.concentracion=parseInt(b.dataset.n,10); renderCierre(); }));
   document.getElementById('stars-lbl').textContent = d.concentracion>0 ? d.concentracion+' de 5' : 'Toca una estrella';
-  const nota=document.getElementById('nota');
-  nota.value=d.nota;
-  nota.addEventListener('input',()=>{ draft.nota=nota.value; });
+  const nota=document.getElementById('nota'); nota.value=d.nota; nota.addEventListener('input',()=>{ draft.nota=nota.value; });
 }
 function guardarRegistro(){
   if(!draft.concentracion){ toast('Toca una estrella (concentración)'); return; }
-  const rec=Object.assign({}, draft, { id:uid(), fecha:hoyISO(), anulado:false, ejemplo:false });
+  const rec=Object.assign({}, draft, {id:uid(),fecha:hoyISO(),anulado:false,ejemplo:false});
   const arr=registros(); arr.push(rec); save(arr);
-  draft=null;
-  toast('Registro guardado ✔');
-  show('inicio');
+  draft=null; toast('Registro guardado ✔'); show('inicio');
 }
 
 /* ---------- RESULTADOS ---------- */
-function statsIndicador(recs, key){
+function statsIndicador(recs,key){
   if(key==='acierto') return avg(recs.map(pct));
   if(key==='concentracion') return avg(recs.map(r=>r.concentracion||null));
   if(key==='minutos') return avg(recs.map(r=>r.minutos>0?r.minutos:null));
   return null;
 }
 function renderResultados(){
-  const recs=activos();
-  const A=recs.filter(r=>r.condicion==='A');
-  const B=recs.filter(r=>r.condicion==='B');
-
-  // banner de cantidad mínima
+  const recs=activos(); const A=recs.filter(r=>r.condicion==='A'), B=recs.filter(r=>r.condicion==='B');
   const banner=document.getElementById('resultado-banner');
-  if(A.length<5 || B.length<5){
-    banner.innerHTML='<div class="banner warn">⚠️ Para una comparación confiable necesitas al menos <b>5 registros de cada condición</b>. Ahora tienes A='+A.length+' y B='+B.length+'.</div>';
-  } else {
-    banner.innerHTML='<div class="banner ok">✔ Tienes '+A.length+' registros de A y '+B.length+' de B. Muestra suficiente para comparar.</div>';
-  }
+  if(!recs.length){ banner.innerHTML='<div class="banner warn">Aún no hay registros. Toca <b>Registrar</b> para empezar.</div>'; }
+  else if(A.length<5||B.length<5){ banner.innerHTML='<div class="banner warn">⚠️ Necesitas al menos <b>5 registros de cada condición</b>. Ahora: A='+A.length+' y B='+B.length+'.</div>'; }
+  else banner.innerHTML='<div class="banner ok">✔ Muestra suficiente: A='+A.length+' y B='+B.length+'.</div>';
 
-  // selector de indicador
   const sb=document.getElementById('segbar-ind');
   sb.innerHTML=INDICADORES.map(i=>'<button data-k="'+i.key+'" class="'+(indSel===i.key?'active':'')+'">'+esc(i.label)+'</button>').join('');
   sb.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ indSel=b.dataset.k; renderResultados(); }));
 
   const ind=INDICADORES.find(i=>i.key===indSel);
-  const va=statsIndicador(A, indSel);
-  const vb=statsIndicador(B, indSel);
-
-  const fmtVal=v=> v===null ? '—' : round(v, ind.decimals) + (ind.unit==='%'?'%':' '+ind.unit);
+  const va=statsIndicador(A,indSel), vb=statsIndicador(B,indSel);
+  const fv=v=> v===null?'—': round(v,ind.decimals)+(ind.unit==='%'?'%':' '+ind.unit);
   document.getElementById('cmp-ind').innerHTML =
-    '<div class="box a"><div class="k">A · Tradicional</div><div class="v">'+fmtVal(va)+'</div><div class="u">'+A.length+' sesiones</div></div>'+
-    '<div class="box b"><div class="k">B · Freak</div><div class="v">'+fmtVal(vb)+'</div><div class="u">'+B.length+' sesiones</div></div>';
-
-  const deltaEl=document.getElementById('cmp-delta');
-  if(va!==null && vb!==null){
-    const dif=round(vb-va, ind.decimals);
-    const mejor = ind.key==='minutos' ? (dif<0) : (dif>0);
-    const cls = Math.abs(dif)<0.05 ? 'zero' : (mejor?'pos':'neg');
-    const dir = ind.key==='minutos' ? (dif<0?'menos':'más') : (dif>0?'más':'menos');
-    const sign = dif>0?'+':(dif<0?'−':'');
-    deltaEl.innerHTML='<div class="delta '+cls+'">Diferencia B vs A: <b>'+sign+Math.abs(dif)+' '+ind.unit+'</b> ('+dir+' en B).</div>';
-  } else {
-    deltaEl.innerHTML='<div class="delta zero">Registra al menos una sesión de cada condición para ver la diferencia.</div>';
-  }
+    '<div class="box a"><div class="k">A · Tradicional</div><div class="v">'+fv(va)+'</div><div class="u">'+A.length+' sesiones</div></div>'+
+    '<div class="box b"><div class="k">B · Freak</div><div class="v">'+fv(vb)+'</div><div class="u">'+B.length+' sesiones</div></div>';
+  const de=document.getElementById('cmp-delta');
+  if(va!==null&&vb!==null){
+    const dif=round(vb-va,ind.decimals); const mejor= ind.key==='minutos'?(dif<0):(dif>0);
+    const cls=Math.abs(dif)<0.05?'zero':(mejor?'pos':'neg');
+    const dir= ind.key==='minutos'?(dif<0?'menos':'más'):(dif>0?'más':'menos');
+    const sign= dif>0?'+':(dif<0?'−':'');
+    de.innerHTML='<div class="delta '+cls+'">B vs A: <b>'+sign+Math.abs(dif)+' '+ind.unit+'</b> ('+dir+' en B).</div>';
+  } else de.innerHTML='<div class="delta zero">Registra una sesión de cada condición para ver la diferencia.</div>';
 
   drawBars(); drawTimeline();
 
-  // mensajes
-  const msg=document.getElementById('mensajes');
-  const li=[];
-  if(A.length>=5 && B.length>=5){
+  const msg=document.getElementById('mensajes'); const li=[];
+  if(A.length>=5&&B.length>=5){
     const pa=statsIndicador(A,'acierto'), pb=statsIndicador(B,'acierto');
-    if(pa!==null && pb!==null) li.push('En <b>B</b> acertaste en promedio <b>'+Math.round(pb)+'%</b> frente a <b>'+Math.round(pa)+'%</b> en A (diferencia de '+Math.round(pb-pa)+' puntos).');
+    if(pa!==null&&pb!==null) li.push('En <b>B</b> acertaste en promedio <b>'+Math.round(pb)+'%</b> frente a <b>'+Math.round(pa)+'%</b> en A (diferencia de '+Math.round(pb-pa)+' puntos).');
     const ca=statsIndicador(A,'concentracion'), cb=statsIndicador(B,'concentracion');
-    if(ca!==null && cb!==null) li.push('Tu concentración promedio fue de <b>'+round(cb,1)+'/5</b> en B y <b>'+round(ca,1)+'/5</b> en A.');
+    if(ca!==null&&cb!==null) li.push('Tu concentración promedio fue <b>'+round(cb,1)+'/5</b> en B y <b>'+round(ca,1)+'/5</b> en A.');
     const ma=statsIndicador(A,'minutos'), mb=statsIndicador(B,'minutos');
-    if(ma!==null && mb!==null) li.push('En B invertiste en promedio <b>'+Math.round(mb)+' min</b> por sesión frente a <b>'+Math.round(ma)+' min</b> en A.');
-  } else {
-    li.push('Todavía no hay suficientes datos para comparar. Sigue registrando hasta tener al menos 5 sesiones de cada condición.');
-  }
+    if(ma!==null&&mb!==null) li.push('En B invertiste <b>'+Math.round(mb)+' min</b>/sesión frente a <b>'+Math.round(ma)+' min</b> en A.');
+  } else if(recs.length){ li.push('Sigue registrando hasta tener al menos 5 sesiones de cada condición para comparar.'); }
   li.push('Recuerda: esto <b>no prueba causalidad</b>; solo describe lo que mediste.');
   msg.innerHTML=li.map(t=>'<li>'+t+'</li>').join('');
 
-  // lista de registros
   const lista=document.getElementById('lista-registros');
-  if(!recs.length){ lista.innerHTML='<p class="muted">Sin registros.</p>'; }
+  if(!recs.length){ lista.innerHTML='<div class="empty"><div class="big">📭</div>Sin registros todavía.</div>'; }
   else{
     const orden=[...recs].sort((a,b)=>b.fecha.localeCompare(a.fecha));
     lista.innerHTML=orden.map(r=>
-      '<div class="row">'+
-        '<div class="'+(r.anulado?'anulado':'')+'">'+
-          '<div style="font-weight:700;">'+pct(r)+'% · '+esc(r.categoria)+' <span class="pill '+(r.condicion==='A'?'pill-a':'pill-b')+'">'+r.condicion+'</span></div>'+
-          '<div class="meta">'+fmtFechaHora(r.fecha)+(r.anulado?' · <span class="tag-anulado">ANULADO</span>':'')+'</div>'+
-        '</div>'+
+      '<div class="row"><div class="'+(r.anulado?'anulado':'')+'">'+
+        '<div style="font-weight:700;">'+pct(r)+'% · '+esc(r.categoria)+' <span class="pill '+(r.condicion==='A'?'pill-a':'pill-b')+'">'+r.condicion+'</span></div>'+
+        '<div class="meta">'+fmtFechaHora(r.fecha)+(r.anulado?' · <span class="tag-anulado">ANULADO</span>':'')+'</div></div>'+
         '<div style="display:flex;gap:6px;flex-shrink:0;">'+
           '<button class="btn btn-ghost btn-sm" onclick="toggleAnulado(\''+r.id+'\')">'+(r.anulado?'Restaurar':'Anular')+'</button>'+
-          '<button class="btn btn-ghost btn-sm" onclick="eliminarRegistro(\''+r.id+'\')">✕</button>'+
-        '</div>'+
-      '</div>').join('');
+          '<button class="btn btn-ghost btn-sm" onclick="eliminarRegistro(\''+r.id+'\')">✕</button></div></div>').join('');
   }
 }
-function toggleAnulado(id){
-  const arr=registros(); const r=arr.find(x=>x.id===id);
-  if(r){ r.anulado=!r.anulado; save(arr); renderResultados(); }
-}
-function eliminarRegistro(id){
-  if(!confirm('¿Eliminar este registro?')) return;
-  const arr=registros().filter(x=>x.id!==id); save(arr); renderResultados();
-}
+function toggleAnulado(id){ const a=registros(); const r=a.find(x=>x.id===id); if(r){ r.anulado=!r.anulado; save(a); renderResultados(); } }
+function eliminarRegistro(id){ if(!confirm('¿Eliminar este registro?')) return; save(registros().filter(x=>x.id!==id)); renderResultados(); }
 
-/* ---------- gráficos (Canvas) ---------- */
-function setupCanvas(canvas, h){
-  const dpr=window.devicePixelRatio||1;
-  const w=canvas.clientWidth||canvas.parentElement.clientWidth||320;
-  canvas.width=w*dpr; canvas.height=h*dpr;
-  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
-  ctx.clearRect(0,0,w,h);
+/* ---------- gráficos ---------- */
+function chartColors(){ const dark=document.documentElement.dataset.theme==='dark';
+  return { grid: dark?'#2A2A38':'#E5E7EB', text: dark?'#9CA3AF':'#6B7280', label: dark?'#F3F4F6':'#111827',
+           fillA: dark?'#2A2A36':'#E5E7EB', fillB: dark?'#2E2450':'#EDE9FE', a: dark?'#9CA3AF':'#6B7280', b: dark?'#A78BFA':'#7C3AED' }; }
+function setupCanvas(canvas,h){
+  const dpr=window.devicePixelRatio||1, w=canvas.clientWidth||canvas.parentElement.clientWidth||320;
+  canvas.width=w*dpr; canvas.height=h*dpr; const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr); ctx.clearRect(0,0,w,h);
   return {ctx,w,h};
 }
 function drawBars(){
-  const canvas=document.getElementById('chart-bars');
+  const c=chartColors(), canvas=document.getElementById('chart-bars');
   const {ctx,w,h}=setupCanvas(canvas,220);
-  const ind=INDICADORES.find(i=>i.key===indSel);
-  const recs=activos();
-  const va=statsIndicador(recs.filter(r=>r.condicion==='A'),indSel);
-  const vb=statsIndicador(recs.filter(r=>r.condicion==='B'),indSel);
-  const max= ind.max || Math.max(va||0, vb||0, 1)*1.15;
-  const padL=34, padR=10, padT=18, padB=30;
-  const plotW=w-padL-padR, plotH=h-padT-padB;
-  // eje y
-  ctx.strokeStyle='#E5E7EB'; ctx.fillStyle='#6B7280'; ctx.font='11px system-ui'; ctx.textAlign='right'; ctx.textBaseline='middle';
-  const ticks=4;
-  for(let i=0;i<=ticks;i++){
-    const y=padT+plotH-(plotH*i/ticks);
-    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
-    const v=round(max*i/ticks, ind.decimals);
-    ctx.fillText(v+(ind.unit==='%'?'%':''), padL-6, y);
-  }
-  function bar(cx, val, fill, stroke){
-    if(val===null) return;
-    const bh=(val/max)*plotH;
-    const bw=Math.min(70, plotW*0.28);
-    const x=cx-bw/2, y=padT+plotH-bh;
-    ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.roundRect(x,y,bw,bh,8); ctx.fill(); ctx.stroke();
-    ctx.fillStyle='#111827'; ctx.font='bold 14px system-ui'; ctx.textAlign='center'; ctx.textBaseline='bottom';
-    ctx.fillText(round(val,ind.decimals)+(ind.unit==='%'?'%':''), cx, y-4);
-  }
+  const ind=INDICADORES.find(i=>i.key===indSel), recs=activos();
+  const va=statsIndicador(recs.filter(r=>r.condicion==='A'),indSel), vb=statsIndicador(recs.filter(r=>r.condicion==='B'),indSel);
+  const max= ind.max||Math.max(va||0,vb||0,1)*1.15;
+  const padL=34,padR=10,padT=18,padB=30, plotW=w-padL-padR, plotH=h-padT-padB;
+  ctx.strokeStyle=c.grid; ctx.fillStyle=c.text; ctx.font='11px system-ui'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  for(let i=0;i<=4;i++){ const y=padT+plotH-(plotH*i/4); ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke(); ctx.fillText(round(max*i/4,ind.decimals)+(ind.unit==='%'?'%':''),padL-6,y); }
+  function bar(cx,val,fill,stroke){ if(val===null) return; const bh=(val/max)*plotH, bw=Math.min(70,plotW*0.28), x=cx-bw/2, y=padT+plotH-bh;
+    ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=1.5; ctx.beginPath(); ctx.roundRect(x,y,bw,bh,8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=c.label; ctx.font='bold 14px system-ui'; ctx.textAlign='center'; ctx.textBaseline='bottom'; ctx.fillText(round(val,ind.decimals)+(ind.unit==='%'?'%':''),cx,y-4); }
   const cxa=padL+plotW*0.3, cxb=padL+plotW*0.7;
-  bar(cxa, va, COLOR_A_FILL, COLOR_A);
-  bar(cxb, vb, COLOR_B_FILL, COLOR_B);
+  bar(cxa,va,c.fillA,c.a); bar(cxb,vb,c.fillB,c.b);
   ctx.textAlign='center'; ctx.textBaseline='top'; ctx.font='bold 12px system-ui';
-  ctx.fillStyle=COLOR_A; ctx.fillText('A · Tradicional', cxa, padT+plotH+8);
-  ctx.fillStyle=COLOR_B; ctx.fillText('B · Freak', cxb, padT+plotH+8);
+  ctx.fillStyle=c.a; ctx.fillText('A · Tradicional',cxa,padT+plotH+8);
+  ctx.fillStyle=c.b; ctx.fillText('B · Freak',cxb,padT+plotH+8);
 }
 function drawTimeline(){
-  const canvas=document.getElementById('chart-time');
+  const c=chartColors(), canvas=document.getElementById('chart-time');
   const {ctx,w,h}=setupCanvas(canvas,230);
-  const ind=INDICADORES.find(i=>i.key===indSel);
-  const recs=activos();
-  if(!recs.length){ ctx.fillStyle='#6B7280'; ctx.font='13px system-ui'; ctx.textAlign='center'; ctx.fillText('Sin datos todavía', w/2, h/2); return; }
-  // agrupar por día
-  const dias={};
-  recs.forEach(r=>{ const k=r.fecha.slice(0,10); (dias[k]=dias[k]||{A:[],B:[]})[r.condicion].push(r); });
+  const ind=INDICADORES.find(i=>i.key===indSel), recs=activos();
+  if(!recs.length){ ctx.fillStyle=c.text; ctx.font='13px system-ui'; ctx.textAlign='center'; ctx.fillText('Sin datos todavía',w/2,h/2); return; }
+  const dias={}; recs.forEach(r=>{ const k=r.fecha.slice(0,10); (dias[k]=dias[k]||{A:[],B:[]})[r.condicion].push(r); });
   const claves=Object.keys(dias).sort();
-  const padL=34, padR=12, padT=16, padB=30;
-  const plotW=w-padL-padR, plotH=h-padT-padB;
-  const max= ind.max || 100;
-  ctx.strokeStyle='#E5E7EB'; ctx.fillStyle='#6B7280'; ctx.font='11px system-ui'; ctx.textAlign='right'; ctx.textBaseline='middle';
-  const ticks=4;
-  for(let i=0;i<=ticks;i++){
-    const y=padT+plotH-(plotH*i/ticks);
-    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
-    ctx.fillText(round(max*i/ticks, ind.decimals)+(ind.unit==='%'?'%':''), padL-6, y);
-  }
-  const n=claves.length;
-  const x=i=> padL + (n===1? plotW/2 : plotW*i/(n-1));
-  const y=v=> padT + plotH - (Math.min(v,max)/max)*plotH;
-  function serie(cond, color){
-    const pts=[];
-    claves.forEach((k,i)=>{ const vals=dias[k][cond]; if(vals.length){ const s=statsIndicador(vals,indSel); if(s!==null) pts.push([x(i), y(s), s]); } });
-    if(pts.length>1){
-      ctx.strokeStyle=color; ctx.lineWidth=2; ctx.beginPath();
-      pts.forEach((p,ix)=>{ ix?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]); }); ctx.stroke();
-    }
-    pts.forEach(p=>{
-      ctx.fillStyle=color; ctx.beginPath(); ctx.arc(p[0],p[1],4,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#111827'; ctx.font='bold 11px system-ui'; ctx.textAlign='center'; ctx.textBaseline='bottom';
-      ctx.fillText(round(p[2], ind.decimals), p[0], p[1]-5);
-    });
-  }
-  serie('A', COLOR_A); serie('B', COLOR_B);
-  // etiquetas eje x (mostrar hasta ~7)
-  const step=Math.max(1, Math.ceil(n/7));
-  ctx.fillStyle='#6B7280'; ctx.font='11px system-ui'; ctx.textAlign='center'; ctx.textBaseline='top';
-  claves.forEach((k,i)=>{ if(i%step===0 || i===n-1){ ctx.fillText(k.slice(5), x(i), padT+plotH+8); } });
-  // leyenda
-  ctx.textAlign='left'; ctx.font='bold 11px system-ui';
-  ctx.fillStyle=COLOR_A; ctx.fillText('● A tradicional', padL+4, 6);
-  ctx.fillStyle=COLOR_B; ctx.fillText('● B freak', padL+110, 6);
+  const padL=34,padR=12,padT=16,padB=30, plotW=w-padL-padR, plotH=h-padT-padB;
+  const max= ind.max||100;
+  ctx.strokeStyle=c.grid; ctx.fillStyle=c.text; ctx.font='11px system-ui'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  for(let i=0;i<=4;i++){ const y=padT+plotH-(plotH*i/4); ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke(); ctx.fillText(round(max*i/4,ind.decimals)+(ind.unit==='%'?'%':''),padL-6,y); }
+  const n=claves.length, x=i=> padL+(n===1?plotW/2:plotW*i/(n-1)), y=v=> padT+plotH-(Math.min(v,max)/max)*plotH;
+  function serie(cond,color){ const pts=[];
+    claves.forEach((k,i)=>{ const v=dias[k][cond]; if(v.length){ const s=statsIndicador(v,indSel); if(s!==null) pts.push([x(i),y(s),s]); } });
+    if(pts.length>1){ ctx.strokeStyle=color; ctx.lineWidth=2; ctx.beginPath(); pts.forEach((p,ix)=>{ ix?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]); }); ctx.stroke(); }
+    pts.forEach(p=>{ ctx.fillStyle=color; ctx.beginPath(); ctx.arc(p[0],p[1],4,0,Math.PI*2); ctx.fill(); ctx.fillStyle=c.label; ctx.font='bold 11px system-ui'; ctx.textAlign='center'; ctx.textBaseline='bottom'; ctx.fillText(round(p[2],ind.decimals),p[0],p[1]-5); }); }
+  serie('A',c.a); serie('B',c.b);
+  const step=Math.max(1,Math.ceil(n/7));
+  ctx.fillStyle=c.text; ctx.font='11px system-ui'; ctx.textAlign='center'; ctx.textBaseline='top';
+  claves.forEach((k,i)=>{ if(i%step===0||i===n-1) ctx.fillText(k.slice(5),x(i),padT+plotH+8); });
+  ctx.textAlign='left'; ctx.font='bold 11px system-ui'; ctx.fillStyle=c.a; ctx.fillText('● A tradicional',padL+4,6); ctx.fillStyle=c.b; ctx.fillText('● B freak',padL+110,6);
 }
 
 /* ---------- EXPORTAR ---------- */
-function renderExportar(){
-  document.getElementById('n-ejemplo').textContent=registros().filter(r=>r.ejemplo).length;
-}
-function csvCell(v){ v=v==null?'':String(v); return /[",\n]/.test(v)? '"'+v.replace(/"/g,'""')+'"' : v; }
-function descargar(nombre, contenido, mime){
-  const blob=new Blob([contenido], {type:mime});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download=nombre;
-  document.body.appendChild(a); a.click();
-  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
-}
+function renderExportar(){ document.getElementById('n-ejemplo').textContent=registros().filter(r=>r.ejemplo).length; }
+function csvCell(v){ v=v==null?'':String(v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
+function descargar(nombre,contenido,mime){ const blob=new Blob([contenido],{type:mime}), url=URL.createObjectURL(blob), a=document.createElement('a'); a.href=url; a.download=nombre; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(url); a.remove();},500); }
 function exportarCSV(){
   const recs=registros().slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const head=['fecha','hora','condicion','categoria','aciertos','total','porcentaje','minutos','concentracion','nota','anulado','ejemplo'];
-  const filas=recs.map(r=>{
-    const d=new Date(r.fecha);
-    return [d.toLocaleDateString('es-BO'), d.toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit'}),
-      r.condicion, r.categoria, r.aciertos, r.total, pct(r), r.minutos, r.concentracion,
-      r.nota||'', r.anulado?'sí':'no', r.ejemplo?'sí':'no'].map(csvCell).join(',');
-  });
-  const csv=[head.join(','), ...filas].join('\n');
-  descargar('parcial_freak_datos_'+hoyISO().slice(0,10)+'.csv', '\uFEFF'+csv, 'text/csv;charset=utf-8');
-  toast('CSV descargado');
+  const filas=recs.map(r=>{ const d=new Date(r.fecha); return [d.toLocaleDateString('es-BO'),d.toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit'}),r.condicion,r.categoria,r.aciertos,r.total,pct(r),r.minutos,r.concentracion,r.nota||'',r.anulado?'sí':'no',r.ejemplo?'sí':'no'].map(csvCell).join(','); });
+  descargar('parcial_freak_datos_'+toLocalISO(new Date())+'.csv','\uFEFF'+[head.join(','),...filas].join('\n'),'text/csv;charset=utf-8'); toast('CSV descargado');
 }
 function exportarResumen(){
   const recs=activos().slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const A=recs.filter(r=>r.condicion==='A'), B=recs.filter(r=>r.condicion==='B');
-  const lineas=[];
-  lineas.push('Parcial Freak — Resumen de evidencias');
-  lineas.push('Generado: '+new Date().toLocaleString('es-BO'));
-  lineas.push('');
-  lineas.push('Objetivo: comprobar si el método freak (B) mejora el rendimiento frente al método tradicional (A).');
-  lineas.push('');
-  lineas.push('Registros válidos: '+recs.length+'  (A='+A.length+', B='+B.length+')');
-  if(recs.length){
-    lineas.push('Rango de fechas: '+fmtFecha(recs[0].fecha)+' → '+fmtFecha(recs[recs.length-1].fecha));
+  const L=['Parcial Freak — Resumen de evidencias','Generado: '+new Date().toLocaleString('es-BO'),'','Objetivo: comprobar si el método freak (B) mejora el rendimiento frente al tradicional (A).','','Registros válidos: '+recs.length+'  (A='+A.length+', B='+B.length+')'];
+  if(recs.length) L.push('Rango de fechas: '+fmtFecha(recs[0].fecha)+' → '+fmtFecha(recs[recs.length-1].fecha));
+  L.push('');
+  INDICADORES.forEach(ind=>{ const va=statsIndicador(A,ind.key), vb=statsIndicador(B,ind.key); const f=v=> v===null?'—': round(v,ind.decimals)+(ind.unit==='%'?'%':' '+ind.unit); L.push(ind.label+':  A = '+f(va)+'  |  B = '+f(vb)); });
+  L.push('','Nota: comparación descriptiva; no prueba causalidad.','','— Registros —');
+  recs.forEach(r=>{ L.push(fmtFechaHora(r.fecha)+' | '+r.condicion+' | '+r.categoria+' | '+r.aciertos+'/'+r.total+' ('+pct(r)+'%) | '+r.minutos+' min | concentración '+r.concentracion+'/5'+(r.nota?' | '+r.nota:'')); });
+  descargar('parcial_freak_resumen_'+toLocalISO(new Date())+'.txt',L.join('\n'),'text/plain;charset=utf-8'); toast('Resumen descargado');
+}
+function borrarEjemplos(){ save(registros().filter(r=>!r.ejemplo)); toast('Datos de ejemplo borrados'); renderExportar(); renderInicio(); }
+function borrarTodo(){ if(!confirm('¿Borrar TODOS los registros? No se puede deshacer.')) return; save([]); toast('Todo borrado'); renderExportar(); renderInicio(); }
+
+/* ---------- COMENTARIOS (feedback) ---------- */
+function renderComentarios(){
+  const st=document.getElementById('fb-stars');
+  st.innerHTML=[1,2,3,4,5].map(n=>'<button data-n="'+n+'" class="'+(n<=fbRating?'on':'')+'">★</button>').join('');
+  st.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ fbRating=parseInt(b.dataset.n,10); renderComentarios(); }));
+  document.getElementById('fb-stars-lbl').textContent = fbRating>0 ? fbRating+' de 5' : 'Toca una estrella';
+  document.getElementById('btn-form').style.display = CONFIG.FORM_URL ? 'flex' : 'none';
+}
+function buildFeedbackMsg(rating,comment){
+  const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
+  let m='📱 Parcial Freak — Prueba de estudiante\n';
+  m+='Valoración: '+(rating||'—')+'/5 '+(rating?stars:'')+'\n';
+  if(comment) m+='Comentario: '+comment+'\n';
+  m+='Enviado: '+new Date().toLocaleString('es-BO');
+  return m;
+}
+function enviarFeedback(canal){
+  const comment=document.getElementById('fb-comentario').value.trim();
+  if(!fbRating && canal!=='form'){ toast('Toca una estrella para valorar'); return; }
+  const msg=buildFeedbackMsg(fbRating,comment);
+  if(canal==='whatsapp'){
+    if(!CONFIG.WHATSAPP){ toast('WhatsApp aún no configurado'); return; }
+    window.open('https://wa.me/'+CONFIG.WHATSAPP+'?text='+encodeURIComponent(msg),'_blank');
+  } else if(canal==='email'){
+    window.location.href='mailto:'+CONFIG.EMAIL+'?subject='+encodeURIComponent('Parcial Freak — prueba')+'&body='+encodeURIComponent(msg);
+  } else if(canal==='form'){
+    if(!CONFIG.FORM_URL){ toast('Formulario no configurado'); return; }
+    window.open(CONFIG.FORM_URL,'_blank');
+  } else if(canal==='copy'){
+    (navigator.clipboard?navigator.clipboard.writeText(msg):Promise.reject()).then(()=>toast('Comentario copiado ✔')).catch(()=>{ const ta=document.createElement('textarea'); ta.value=msg; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('Comentario copiado ✔'); });
   }
-  lineas.push('');
-  INDICADORES.forEach(ind=>{
-    const va=statsIndicador(A,ind.key), vb=statsIndicador(B,ind.key);
-    const f=v=> v===null?'—': round(v,ind.decimals)+(ind.unit==='%'?'%':' '+ind.unit);
-    lineas.push(ind.label+':  A = '+f(va)+'  |  B = '+f(vb));
-  });
-  lineas.push('');
-  lineas.push('Nota: comparación descriptiva; no prueba causalidad.');
-  lineas.push('');
-  lineas.push('— Registros —');
-  recs.forEach(r=>{
-    lineas.push(fmtFechaHora(r.fecha)+' | '+r.condicion+' | '+r.categoria+' | '+r.aciertos+'/'+r.total+' ('+pct(r)+'%) | '+r.minutos+' min | concentración '+r.concentracion+'/5'+(r.nota?' | '+r.nota:''));
-  });
-  descargar('parcial_freak_resumen_'+hoyISO().slice(0,10)+'.txt', lineas.join('\n'), 'text/plain;charset=utf-8');
-  toast('Resumen descargado');
-}
-function borrarEjemplos(){
-  const arr=registros().filter(r=>!r.ejemplo);
-  save(arr); toast('Datos de ejemplo borrados'); renderExportar(); renderInicio();
-}
-function borrarTodo(){
-  if(!confirm('¿Borrar TODOS los registros? Esta acción no se puede deshacer.')) return;
-  save([]); toast('Todo borrado'); renderExportar(); renderInicio();
 }
 
+/* ---------- onboarding ---------- */
+function cerrarOnboarding(){ document.getElementById('modal').classList.remove('show'); localStorage.setItem('pf_onboarded','1'); }
+
 /* ---------- arranque ---------- */
-registros();          // siembra datos de ejemplo la primera vez
-renderInicio();
-renderExportar();
+if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){ r=Math.min(r,w/2,h/2); this.moveTo(x+r,y); this.arcTo(x+w,y,x+w,y+h,r); this.arcTo(x+w,y+h,x,y+h,r); this.arcTo(x,y+h,x,y,r); this.arcTo(x,y,x+w,y,r); this.closePath(); return this; };
+}
+if ('serviceWorker' in navigator) { window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{})); }
+aplicarTema(localStorage.getItem('pf_theme')==='dark'?'dark':'light');
+registros();
+renderInicio(); renderExportar();
+if(!localStorage.getItem('pf_onboarded')) document.getElementById('modal').classList.add('show');
 </script>
 </body>
 </html>
