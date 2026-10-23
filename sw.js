@@ -1,5 +1,5 @@
 /* Parcial Freak — Service Worker (PWA, funciona sin conexión) */
-const CACHE = 'parcial-freak-v2';
+const CACHE = 'parcial-freak-v3';
 const ASSETS = [
   './',
   './index.html',

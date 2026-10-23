@@ -1,30 +1,30 @@
 # Parcial Freak 🎯
 
-App web móvil (en español) para comparar dos métodos de estudio y comprobar con tus **propios datos** si el *método freak* mejora tu rendimiento en el parcial.
+Compañero de estudio móvil (PWA, en español) para la materia **INV 150 — Metodología de la Investigación · UAGRM · Santa Cruz, Bolivia**, inspirado en *Piensa como un Freak* (Levitt & Dubner).
 
-> Materia: **INV 150 — Metodología de la Investigación** · UAGRM · Santa Cruz, Bolivia
-> Inspirada en *Piensa como un Freak* (Levitt & Dubner).
+## Qué hace
+1. **📚 Estudiar → Temas:** carga los temas de tu materia.
+2. **📄 Materiales:** sube tus **ejercicios, exámenes y prácticos** por tema (texto del enunciado).
+3. **📝 Práctica:** resuelve y marca **✓ acerté / ✗ fallé**; se guarda como registro.
+4. **🩺 Diagnóstico:** analiza tus errores por tema.
+5. **🧭 Plan de corrección:** te dice qué conceptos repasar y cuántos ejercicios hacer, en orden de prioridad.
+6. **📊 A vs B:** compara tu método tradicional (releer) contra el método freak (IA con tus errores).
 
 ## El problema
-- **Pregunta clásica:** «¿Cómo me obligo a estudiar *más horas* para retener mejor antes del examen?»
-- **Pregunta freak:** «¿Cómo rindo mejor invirtiendo *menos horas*, usando a la IA como un sistema entrenado con *mis propios errores*?»
-
-## Qué compara
-| Condición | Método |
-|---|---|
-| **A (gris)** | Tradicional: releer y subrayar apuntes |
-| **B (violeta)** | Freak: practicar con IA entrenada en tus errores |
+- **Pregunta clásica:** «¿Cómo me obligo a estudiar *más horas* para retener mejor?»
+- **Pregunta freak:** «¿Cómo rindo mejor con *menos horas*, usando la IA entrenada con *mis propios errores*?»
 
 ## Cómo usarla
-1. **Registrar:** marca la condición (A/B), el tema, tus aciertos/total, minutos y una calificación de concentración (1–5).
-2. **Resultados:** compara A vs B en % de acierto, concentración y minutos, con gráficos y avisos.
-3. **Exportar:** descarga tus datos en CSV y un resumen con fechas como anexo de evidencias.
+- **Registrar:** anota cada sesión (condición A/B, tema, aciertos/total, minutos y concentración 1–5).
+- **Estudiar:** gestiona temas, materiales, práctica y diagnóstico/plan.
+- **Exportar:** descarga tus datos (CSV) y un resumen con fechas como anexo de evidencias.
+- **Comentarios:** envía tu opinión al profe por WhatsApp o correo.
 
 ## Privacidad
-Todos los datos quedan **en tu dispositivo** (localStorage del navegador). No se envían a ningún servidor y no se pide nombre real, correo ni edad.
+Todos los datos quedan **en tu dispositivo** (localStorage del navegador). No se envían a ningún servidor ni se pide nombre, correo o edad.
 
 ## Tecnología
-Un solo archivo `index.html` autocontenido (HTML + CSS + JavaScript). Sin dependencias, funciona sin conexión.
+Un solo `index.html` autocontenido (HTML + CSS + JS) + PWA (`manifest.webmanifest`, `sw.js`, íconos). Funciona sin conexión y se puede instalar en la pantalla de inicio.
 
 ## Datos de ejemplo
-Incluye registros de ejemplo (marcados como «Datos de ejemplo») para que veas cómo funciona. Se borran con un botón en la pantalla **Exportar**.
+Incluye registros, temas y materiales de ejemplo (marcados como «Datos de ejemplo»). Se borran con el botón en **Exportar**.
